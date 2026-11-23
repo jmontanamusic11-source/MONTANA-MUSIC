@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090d">
+<title>NOVA MUSIC | Descubre nuevos sonidos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#09090d;color:white;font-family:Arial,sans-serif;padding-bottom:100px}
+button{cursor:pointer;border:0;color:inherit;font:inherit}
+header{padding:23px 6%;display:flex;justify-content:space-between;align-items:center;background:#111116;border-bottom:1px solid #29232f}
+.logo{font-size:22px;font-weight:900;letter-spacing:1px}
+.logo span{color:#b58aff}
+.profile{background:#7545a7;border-radius:50%;width:37px;height:37px;display:grid;place-items:center}
+nav{display:flex;gap:23px;padding:17px 6%;overflow-x:auto;background:#111116}
+nav button{background:none;color:#aaa;font-size:13px;white-space:nowrap}
+nav button:hover{color:#c49aff}
+main{max-width:1100px;margin:auto;padding:25px 6%}
+.hero{padding:38px 25px;border-radius:18px;background:radial-gradient(circle at 90% 20%,#7441a45c,transparent 45%),linear-gradient(120deg,#281a38,#111017);border:1px solid #40304f}
+.tag{font-size:10px;letter-spacing:3px;color:#c39afc;font-weight:bold}
+h1{font-size:clamp(36px,8vw,58px);line-height:1.1;margin:20px 0}
+h1 span{color:#bb91f7}
+.hero p{color:#b7afc0;font-size:13px;line-height:1.7;max-width:430px}
+.primary{background:#a16aee;padding:13px 19px;border-radius:9px;margin-top:22px;font-weight:bold}
+.section{margin-top:40px}
+.heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.heading h2{font-size:21px}
+.heading small{color:#92899c}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:#17151c;padding:11px;border:1px solid #29232f;border-radius:13px;min-width:0}
+.cover{height:auto;aspect-ratio:1;border-radius:9px;display:grid;place-items:center;font-size:42px;background:linear-gradient(145deg,#8a51bc,#21162d 70%,#d28cfa);position:relative}
+.cover button{position:absolute;bottom:9px;right:9px;background:#a16aee;width:39px;height:39px;border-radius:50%;font-size:18px}
+.card h3{font-size:13px;margin:12px 0 6px;overflow-wrap:anywhere}
+.card p{font-size:11px;color:#a49bab}
+.add{min-height:210px;display:grid;place-items:center;text-align:center;border:1px dashed #76539b;background:#191320}
+.add strong{display:block;color:#c39afc;font-size:35px}
+.add span{font-size:12px;color:#c5b9d2}
+.upload{margin-top:25px;padding:20px;background:#17131e;border:1px solid #382746;border-radius:12px}
+.upload h3{font-size:15px;margin-bottom:8px}
+.upload p{font-size:12px;color:#aaa;margin-bottom:15px}
+.upload label{display:inline-block;background:#a16aee;padding:12px 16px;border-radius:8px;font-size:12px;cursor:pointer}
+.playlists{display:flex;flex-wrap:wrap;gap:10px}
+.playlist{background:#241c30;border:1px solid #48335d;border-radius:10px;padding:17px;font-size:13px}
+.player{position:fixed;bottom:0;left:0;right:0;background:#17141d;border-top:1px solid #493854;padding:13px 17px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.track{min-width:0;flex:1}
+.track strong{font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track small{font-size:10px;color:#aaa}
+.controls{display:flex;align-items:center;gap:12px}
+.controls button{background:none;font-size:18px}
+.controls .play{background:white;color:#111;border-radius:50%;width:38px;height:38px}
+#status{color:#c39afc;font-size:11px;margin-top:12px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}main{padding-top:40px}.hero{padding:55px}.player{padding:14px 6%}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">NOVA<span>MUSIC</span></div>
+<div class="profile">N</div>
+</header>
+
+<nav>
+<button onclick="show('Inicio')">⌂ Inicio</button>
+<button onclick="show('Explorar')">◈ Explorar</button>
+<button onclick="show('Artistas')">♬ Artistas</button>
+<button onclick="show('Playlists')">▤ Playlists</button>
+<button onclick="document.getElementById('files').click()">＋ Subir música</button>
+</nav>
+
+<main>
+<section class="hero">
+<div class="tag">EL SONIDO DEL FUTURO</div>
+<h1>Descubre música<br><span>antes que nadie.</span></h1>
+<p>Un espacio para nuevos sonidos, artistas independientes y música que todavía no ha llegado al mundo.</p>
+<button class="primary" onclick="document.getElementById('library').scrollIntoView({behavior:'smooth'})">Explorar música ↗</button>
+</section>
+
+<section class="section">
+<div class="heading">
+<h2 id="sectionTitle">Nuevos descubrimientos</h2>
+<small id="total">0 canciones</small>
+</div>
+<div class="grid" id="library">
+<label class="card add" for="files">
+<div><strong>＋</strong><span>Agrega tu primera canción</span></div>
+</label>
+</div>
+<div id="status">Tu espacio para descubrir nuevos sonidos.</div>
+</section>
+
+<section class="upload">
+<h3>¿Tienes música inédita?</h3>
+<p>Selecciona archivos de audio desde tu celular para probar el reproductor.</p>
+<label for="files">＋ Seleccionar canciones</label>
+<input id="files" type="file" accept="audio/*" multiple hidden>
+</section>
+
+<section class="section">
+<div class="heading"><h2>Mis playlists</h2><button class="primary" onclick="createPlaylist()">＋ Crear</button></div>
+<div class="playlists" id="playlists">
+<div class="playlist">♡ Mis favoritos</div>
+</div>
+</section>
+</main>
+
+<footer class="player">
+<div class="track">
+<strong id="songTitle">NOVA MUSIC</strong>
+<small id="artist">Tu próximo descubrimiento</small>
+</div>
+<div class="controls">
+<button onclick="previous()">|◀</button>
+<button class="play" id="playBtn" onclick="toggle()">▶</button>
+<button onclick="next()">▶|</button>
+</div>
+</footer>
+
+<audio id="audio"></audio>
+
+<script>
+const audio=document.getElementById('audio');
+let songs=[],index=-1;
+const library=document.getElementById('library');
+
+function render(){
+library.innerHTML='';
+songs.forEach((song,i)=>{
+const card=document.createElement('div');
+card.className='card';
+card.innerHTML='<div class="cover">♫<button>▶</button></div><h3></h3><p>Artista independiente</p>';
+card.querySelector('h3').textContent=song.name;
+card.querySelector('button').onclick=()=>play(i);
+library.appendChild(card);
+});
+const add=document.createElement('label');
+add.className='card add';
+add.htmlFor='files';
+add.innerHTML='<div><strong>＋</strong><span>Agregar música</span></div>';
+library.appendChild(add);
+document.getElementById('total').textContent=songs.length+' canciones';
+}
+
+document.getElementById('files').addEventListener('change',e=>{
+[...e.target.files].filter(f=>f.type.startsWith('audio/')).forEach(file=>{
+songs.push({name:file.name.replace(/\.[^.]+$/,''),url:URL.createObjectURL(file)});
+});
+render();
+document.getElementById('status').textContent='Canciones agregadas a tu sesión.';
+e.target.value='';
+});
+
+function play(i){
+index=i;
+audio.src=songs[index].url;
+audio.play();
+document.getElementById('songTitle').textContent=songs[index].name;
+document.getElementById('artist').textContent='Artista independiente';
+document.getElementById('playBtn').textContent='Ⅱ';
+}
+function toggle(){
+if(index<0){if(songs.length)play(0);return;}
+if(audio.paused){audio.play();document.getElementById('playBtn').textContent='Ⅱ';}
+else{audio.pause();document.getElementById('playBtn').textContent='▶';}
+}
+function next(){if(songs.length)play((index+1)%songs.length);}
+function previous(){if(songs.length)play((index-1+songs.length)%songs.length);}
+audio.onended=next;
+audio.onpause=()=>document.getElementById('playBtn').textContent='▶';
+audio.onplay=()=>document.getElementById('playBtn').textContent='Ⅱ';
+
+function createPlaylist(){
+const name=prompt('Nombre de tu playlist:');
+if(name?.trim()){
+const item=document.createElement('div');
+item.className='playlist';
+item.textContent='♫ '+name.trim();
+document.getElementById('playlists').appendChild(item);
+}
+}
+function show(section){
+document.getElementById('sectionTitle').textContent=
+section==='Inicio'?'Nuevos descubrimientos':section;
+document.getElementById('library').scrollIntoView({behavior:'smooth'});
+}
+render();
+</script>
+</body>
+</html>
