@@ -32,7 +32,7 @@ h1 span{color:#ff4d4d}
 .cover{aspect-ratio:1;border-radius:9px;display:grid;place-items:center;font-size:42px;background:linear-gradient(145deg,#b91c1c,#21162d 70%,#d28cfa);position:relative;overflow:hidden}
 .cover img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 .cover button{position:absolute;bottom:9px;right:9px;background:#a16aee;width:39px;height:39px;border-radius:50%;font-size:18px;z-index:2}
-.card h3{font-size:14px;margin:12px 0 6px;overflow-wrap:anywhere}
+.card h3{font-size:14px;margin:12px 0 6px;overflow-wrap:anywhere;cursor:pointer}
 .card p{font-size:12px;color:#c5b8d0;line-height:1.5;overflow-wrap:anywhere}
 .card small{display:block;font-size:10px;color:#92899c;margin-top:6px}
 .artistLinks{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
@@ -48,7 +48,7 @@ h1 span{color:#ff4d4d}
 #adminArea{display:none}
 #status{color:#ff7777;font-size:11px;margin-top:12px;line-height:1.5}
 .player{position:fixed;bottom:0;left:0;right:0;background:#17141d;border-top:1px solid #493854;padding:13px 17px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:5}
-.track{min-width:0;flex:1}
+.track{min-width:0;flex:1;cursor:pointer}
 .track strong{font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .track small{font-size:10px;color:#aaa}
 .controls{display:flex;align-items:center;gap:12px}
@@ -76,7 +76,107 @@ h1 span{color:#ff4d4d}
 .profileHero p{color:#aaa;font-size:13px;line-height:1.6;white-space:pre-wrap}
 .backButton{background:#382746;border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:12px}
 .empty{color:#aaa;font-size:13px;padding:20px 0}
-@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}main{padding-top:40px}.hero{padding:55px}}
+
+/* REPRODUCTOR DE PANTALLA COMPLETA */
+#fullPlayer{
+ display:none;
+ position:fixed;
+ inset:0;
+ z-index:50;
+ background:linear-gradient(160deg,#30203d,#111116 55%,#09090d);
+ padding:25px 7% 35px;
+ overflow-y:auto;
+}
+.fullTop{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ margin-bottom:28px;
+}
+.fullTop button{
+ background:#382746;
+ padding:11px 15px;
+ border-radius:9px;
+}
+.fullTop small{
+ color:#c5b8d0;
+ font-size:10px;
+ letter-spacing:2px;
+ text-align:center;
+}
+.fullCover{
+ width:min(100%,390px);
+ aspect-ratio:1;
+ margin:0 auto 28px;
+ background:linear-gradient(145deg,#b91c1c,#21162d 70%,#d28cfa);
+ border-radius:13px;
+ overflow:hidden;
+ display:grid;
+ place-items:center;
+ font-size:90px;
+ box-shadow:0 15px 45px #0008;
+}
+.fullCover img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+.fullInfo{
+ max-width:390px;
+ margin:auto;
+}
+.fullInfo h2{
+ font-size:25px;
+ overflow-wrap:anywhere;
+ margin-bottom:8px;
+}
+.fullInfo p{
+ color:#c5b8d0;
+ font-size:14px;
+}
+.progressArea{
+ max-width:390px;
+ margin:28px auto 0;
+}
+.progressArea input{
+ width:100%;
+ accent-color:#fff;
+ cursor:pointer;
+}
+.timeLabels{
+ display:flex;
+ justify-content:space-between;
+ color:#aaa;
+ font-size:11px;
+ margin-top:5px;
+}
+.fullControls{
+ max-width:390px;
+ margin:25px auto;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+}
+.fullControls button{
+ background:none;
+ font-size:25px;
+ padding:8px;
+}
+.fullControls .bigPlay{
+ background:#fff;
+ color:#111;
+ width:65px;
+ height:65px;
+ border-radius:50%;
+ font-size:27px;
+}
+@media(min-width:650px){
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ main{padding-top:40px}
+ .hero{padding:55px}
+ #fullPlayer{padding-top:35px}
+}
 </style>
 </head>
 <body>
@@ -191,8 +291,38 @@ h1 span{color:#ff4d4d}
 </div>
 </div>
 
+<!-- PANTALLA COMPLETA DEL REPRODUCTOR -->
+<div id="fullPlayer">
+ <div class="fullTop">
+  <button onclick="closeFullPlayer()">↓ Volver</button>
+  <small>REPRODUCIENDO DESDE MONTANA</small>
+  <span></span>
+ </div>
+
+ <div class="fullCover" id="fullCover">♫</div>
+
+ <div class="fullInfo">
+  <h2 id="fullTitle">Nombre de la canción</h2>
+  <p id="fullArtist">Nombre del artista</p>
+ </div>
+
+ <div class="progressArea">
+  <input id="progress" type="range" min="0" max="100" value="0" step="0.1" oninput="seekTo(this.value)">
+  <div class="timeLabels">
+   <span id="currentTime">0:00</span>
+   <span id="duration">0:00</span>
+  </div>
+ </div>
+
+ <div class="fullControls">
+  <button onclick="previous()">|◀</button>
+  <button class="bigPlay" id="fullPlayBtn" onclick="toggle()">▶</button>
+  <button onclick="next()">▶|</button>
+ </div>
+</div>
+
 <footer class="player">
-<div class="track">
+<div class="track" onclick="openFullPlayer()">
 <strong id="songTitle">MONTANA MUSIC</strong>
 <small id="artist">Tu próximo descubrimiento</small>
 </div>
@@ -385,6 +515,7 @@ async function createSongCard(song,i,adminTools=true){
 
  const title=document.createElement('h3');
  title.textContent=songTitle(song);
+ title.onclick=()=>play(i);
 
  const artistArea=document.createElement('div');
  artistArea.className='artistLinks';
@@ -658,30 +789,131 @@ async function uploadCover(song,input){
  await loadSongs();
 }
 
+/* REPRODUCCIÓN Y PANTALLA COMPLETA */
 async function play(i){
  if(!songs[i])return;
  index=i;
  status('Preparando reproducción...');
+
  const {data,error}=await db.storage.from(BUCKET).createSignedUrl(songs[i].path,3600);
- if(error){status('No se pudo reproducir: '+error.message);return}
+ if(error){
+  status('No se pudo reproducir: '+error.message);
+  return;
+ }
 
  audio.src=data.signedUrl;
- document.getElementById('songTitle').textContent=songTitle(songs[i]);
- document.getElementById('artist').textContent=songArtist(songs[i]);
 
- try{await audio.play()}catch(e){status('Toca reproducir para escuchar.')}
+ const title=songTitle(songs[i]);
+ const artist=songArtist(songs[i]);
+
+ document.getElementById('songTitle').textContent=title;
+ document.getElementById('artist').textContent=artist;
+ document.getElementById('fullTitle').textContent=title;
+ document.getElementById('fullArtist').textContent=artist;
+
+ const fullCover=document.getElementById('fullCover');
+ fullCover.innerHTML='♫';
+
+ const matchingCover=coverFiles.find(f=>
+  f.name&&f.name.startsWith(songs[i].path+'__cover_')
+ );
+
+ if(matchingCover){
+  const {data:coverData}=await db.storage.from(COVER_BUCKET)
+   .createSignedUrl(matchingCover.name,3600);
+
+  if(coverData?.signedUrl){
+   const img=document.createElement('img');
+   img.src=coverData.signedUrl;
+   img.alt='Portada de '+title;
+   fullCover.appendChild(img);
+  }
+ }
+
+ document.getElementById('fullPlayer').style.display='block';
+ document.getElementById('progress').value=0;
+ document.getElementById('currentTime').textContent='0:00';
+ document.getElementById('duration').textContent='0:00';
+
+ try{
+  await audio.play();
+ }catch(e){
+  status('Toca reproducir para escuchar.');
+ }
+}
+
+function openFullPlayer(){
+ if(index>=0){
+  document.getElementById('fullPlayer').style.display='block';
+ }
+}
+
+function closeFullPlayer(){
+ document.getElementById('fullPlayer').style.display='none';
+}
+
+function formatTime(seconds){
+ if(!Number.isFinite(seconds))return '0:00';
+ const mins=Math.floor(seconds/60);
+ const secs=Math.floor(seconds%60);
+ return mins+':'+String(secs).padStart(2,'0');
+}
+
+function seekTo(value){
+ if(Number.isFinite(audio.duration)){
+  audio.currentTime=(Number(value)/100)*audio.duration;
+ }
 }
 
 function toggle(){
- if(index<0){if(songs.length)play(0);return}
- if(audio.paused)audio.play();else audio.pause();
+ if(index<0){
+  if(songs.length)play(0);
+  return;
+ }
+ if(audio.paused){
+  audio.play().catch(()=>status('No se pudo continuar la reproducción.'));
+ }else{
+  audio.pause();
+ }
 }
-function next(){if(songs.length)play((index+1)%songs.length)}
-function previous(){if(songs.length)play((index-1+songs.length)%songs.length)}
+
+function next(){
+ if(songs.length)play((index+1)%songs.length);
+}
+
+function previous(){
+ if(songs.length)play((index-1+songs.length)%songs.length);
+}
+
+audio.ontimeupdate=()=>{
+ if(!Number.isFinite(audio.duration)||audio.duration<=0)return;
+
+ document.getElementById('progress').value=
+  (audio.currentTime/audio.duration)*100;
+
+ document.getElementById('currentTime').textContent=
+  formatTime(audio.currentTime);
+
+ document.getElementById('duration').textContent=
+  formatTime(audio.duration);
+};
+
+audio.onloadedmetadata=()=>{
+ document.getElementById('duration').textContent=
+  formatTime(audio.duration);
+};
 
 audio.onended=next;
-audio.onplay=()=>document.getElementById('playBtn').textContent='Ⅱ';
-audio.onpause=()=>document.getElementById('playBtn').textContent='▶';
+
+audio.onplay=()=>{
+ document.getElementById('playBtn').textContent='Ⅱ';
+ document.getElementById('fullPlayBtn').textContent='Ⅱ';
+};
+
+audio.onpause=()=>{
+ document.getElementById('playBtn').textContent='▶';
+ document.getElementById('fullPlayBtn').textContent='▶';
+};
 
 async function checkUser(){
  const {data,error}=await db.auth.getUser();
