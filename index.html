@@ -13,7 +13,7 @@ header,nav{background:#111116;padding:20px 6%;border-bottom:1px solid #29232f}
 header{display:flex;justify-content:space-between;align-items:center}
 .logo{font-size:22px;font-weight:900}.logo span{color:#ff4545}
 .profile{background:#b91c1c;border-radius:50%;width:37px;height:37px;display:grid;place-items:center}
-nav{display:flex;gap:20px;overflow-x:auto}
+nav{display:flex;gap:18px;overflow-x:auto}
 nav button{background:none;color:#aaa;white-space:nowrap;font-size:13px}
 nav button.active{color:#ff7777}
 main{max-width:1100px;margin:auto;padding:25px 6%}
@@ -23,10 +23,9 @@ h1{font-size:clamp(36px,8vw,58px);margin:20px 0}
 h1 span{color:#ff4d4d}
 .hero p{color:#b7afc0;font-size:13px;line-height:1.7}
 .primary{background:#a16aee;padding:13px 19px;border-radius:9px;margin-top:22px}
-.section{margin-top:40px}
+.section{margin-top:35px}
 .heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:10px}
-.heading h2{font-size:21px}
-.heading small{color:#aaa}
+.heading h2{font-size:21px}.heading small{color:#aaa}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .card{background:#17151c;padding:11px;border:1px solid #29232f;border-radius:13px;min-width:0}
 .cover{aspect-ratio:1;border-radius:9px;display:grid;place-items:center;font-size:42px;background:linear-gradient(145deg,#b91c1c,#21162d 70%,#d28cfa);position:relative;overflow:hidden}
@@ -58,7 +57,7 @@ h1 span{color:#ff4d4d}
 .editorBox{max-width:430px;margin:35px auto;background:#17131e;border:1px solid #493854;border-radius:14px;padding:20px}
 .editorBox h2{font-size:19px;margin-bottom:15px}
 .editorBox label{display:block;font-size:12px;color:#c5b8d0;margin:12px 0 5px}
-.editorBox input,.editorBox textarea{width:100%;padding:12px;background:#09090d;border:1px solid #493854;border-radius:7px;color:white;font:inherit}
+.editorBox input,.editorBox textarea,.editorBox select{width:100%;padding:12px;background:#09090d;border:1px solid #493854;border-radius:7px;color:white;font:inherit}
 .editorBox textarea{min-height:110px;resize:vertical}
 .editorButtons{display:flex;gap:9px;margin-top:18px}
 .editorButtons button{padding:12px;border-radius:8px;flex:1;background:#a16aee}
@@ -76,107 +75,22 @@ h1 span{color:#ff4d4d}
 .profileHero p{color:#aaa;font-size:13px;line-height:1.6;white-space:pre-wrap}
 .backButton{background:#382746;border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:12px}
 .empty{color:#aaa;font-size:13px;padding:20px 0}
-
-/* REPRODUCTOR DE PANTALLA COMPLETA */
-#fullPlayer{
- display:none;
- position:fixed;
- inset:0;
- z-index:50;
- background:linear-gradient(160deg,#30203d,#111116 55%,#09090d);
- padding:25px 7% 35px;
- overflow-y:auto;
-}
-.fullTop{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:10px;
- margin-bottom:28px;
-}
-.fullTop button{
- background:#382746;
- padding:11px 15px;
- border-radius:9px;
-}
-.fullTop small{
- color:#c5b8d0;
- font-size:10px;
- letter-spacing:2px;
- text-align:center;
-}
-.fullCover{
- width:min(100%,390px);
- aspect-ratio:1;
- margin:0 auto 28px;
- background:linear-gradient(145deg,#b91c1c,#21162d 70%,#d28cfa);
- border-radius:13px;
- overflow:hidden;
- display:grid;
- place-items:center;
- font-size:90px;
- box-shadow:0 15px 45px #0008;
-}
-.fullCover img{
- width:100%;
- height:100%;
- object-fit:cover;
-}
-.fullInfo{
- max-width:390px;
- margin:auto;
-}
-.fullInfo h2{
- font-size:25px;
- overflow-wrap:anywhere;
- margin-bottom:8px;
-}
-.fullInfo p{
- color:#c5b8d0;
- font-size:14px;
-}
-.progressArea{
- max-width:390px;
- margin:28px auto 0;
-}
-.progressArea input{
- width:100%;
- accent-color:#fff;
- cursor:pointer;
-}
-.timeLabels{
- display:flex;
- justify-content:space-between;
- color:#aaa;
- font-size:11px;
- margin-top:5px;
-}
-.fullControls{
- max-width:390px;
- margin:25px auto;
- display:flex;
- align-items:center;
- justify-content:space-between;
-}
-.fullControls button{
- background:none;
- font-size:25px;
- padding:8px;
-}
-.fullControls .bigPlay{
- background:#fff;
- color:#111;
- width:65px;
- height:65px;
- border-radius:50%;
- font-size:27px;
-}
-@media(min-width:650px){
- .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
- main{padding-top:40px}
- .hero{padding:55px}
- #fullPlayer{padding-top:35px}
-}
+#fullPlayer{display:none;position:fixed;inset:0;z-index:50;background:linear-gradient(160deg,#30203d,#111116 55%,#09090d);padding:25px 7% 35px;overflow-y:auto}
+.fullTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:28px}
+.fullTop button{background:#382746;padding:11px 15px;border-radius:9px}
+.fullTop small{color:#c5b8d0;font-size:10px;letter-spacing:2px;text-align:center}
+.fullCover{width:min(100%,390px);aspect-ratio:1;margin:0 auto 28px;background:linear-gradient(145deg,#b91c1c,#21162d 70%,#d28cfa);border-radius:13px;overflow:hidden;display:grid;place-items:center;font-size:90px;box-shadow:0 15px 45px #0008}
+.fullCover img{width:100%;height:100%;object-fit:cover}
+.fullInfo,.progressArea{max-width:390px;margin:auto}
+.fullInfo h2{font-size:25px;overflow-wrap:anywhere;margin-bottom:8px}
+.fullInfo p{color:#c5b8d0;font-size:14px}
+.progressArea{margin-top:28px}
+.progressArea input{width:100%;accent-color:#fff;cursor:pointer}
+.timeLabels{display:flex;justify-content:space-between;color:#aaa;font-size:11px;margin-top:5px}
+.fullControls{max-width:390px;margin:25px auto;display:flex;align-items:center;justify-content:space-between}
+.fullControls button{background:none;font-size:25px;padding:8px}
+.fullControls .bigPlay{background:#fff;color:#111;width:65px;height:65px;border-radius:50%;font-size:27px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}main{padding-top:40px}.hero{padding:55px}#fullPlayer{padding-top:35px}}
 </style>
 </head>
 <body>
@@ -188,9 +102,9 @@ h1 span{color:#ff4d4d}
 
 <nav>
 <button id="navHome" class="active" onclick="showHome()">⌂ Inicio</button>
+<button id="navLaunches" onclick="showLaunches()">♫ Lanzamientos</button>
+<button id="navUnreleased" onclick="showUnreleased()">✦ Inéditas</button>
 <button id="navArtists" onclick="showArtists()">♬ Artistas</button>
-<button onclick="showHome()">◈ Explorar</button>
-<button onclick="showHome()">▤ Playlists</button>
 <button onclick="document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'})">♙ Administrador</button>
 </nav>
 
@@ -200,29 +114,39 @@ h1 span{color:#ff4d4d}
 <div class="tag">EL SONIDO DEL FUTURO</div>
 <h1>Descubre música<br><span>antes que nadie.</span></h1>
 <p>Un espacio para nuevos sonidos, artistas independientes y música que todavía no ha llegado al mundo.</p>
-<button class="primary" onclick="document.getElementById('librarySection').scrollIntoView({behavior:'smooth'})">Explorar música ↗</button>
+<button class="primary" onclick="showLaunches()">Explorar lanzamientos ↗</button>
+<button class="primary" onclick="showUnreleased()">Escuchar inéditas ✦</button>
 </section>
-
-<section class="section" id="librarySection">
-<div class="heading">
-<h2>Nuevos descubrimientos</h2>
-<small id="total">Cargando...</small>
-</div>
+<section class="section">
+<div class="heading"><h2>Últimos lanzamientos</h2><small id="total">Cargando...</small></div>
 <div class="grid" id="library"></div>
+</section>
+</div>
+
+<div id="launchesView" style="display:none">
+<section class="section">
+<div class="heading"><h2>♫ Lanzamientos</h2><small id="launchTotal"></small></div>
+<p style="color:#aaa;font-size:13px;margin:-8px 0 18px">Música que ya ha sido estrenada.</p>
+<div class="grid" id="launchLibrary"></div>
+</section>
+</div>
+
+<div id="unreleasedView" style="display:none">
+<section class="section">
+<div class="heading"><h2>✦ Inéditas</h2><small id="unreleasedTotal"></small></div>
+<p style="color:#aaa;font-size:13px;margin:-8px 0 18px">Música disponible antes de su lanzamiento oficial.</p>
+<div class="grid" id="unreleasedLibrary"></div>
 </section>
 </div>
 
 <div id="artistsView" style="display:none">
 <section class="section">
-<div class="heading">
-<h2>Artistas</h2>
-<small id="artistTotal"></small>
-</div>
+<div class="heading"><h2>Artistas</h2><small id="artistTotal"></small></div>
 <div class="grid" id="artistGrid"></div>
 </section>
 </div>
 
-<div id="artistProfile">
+<div id="artistProfile" style="display:none">
 <button class="backButton" onclick="showArtists()">← Volver a artistas</button>
 <section class="profileHero">
 <div class="profilePhoto" id="profilePhoto">♫</div>
@@ -253,14 +177,12 @@ h1 span{color:#ff4d4d}
 </div>
 </div>
 </section>
-
 <div id="status">Conectando...</div>
 </main>
 
 <div id="editor">
 <div class="editorBox">
 <h2 id="editorTitle">Editar información</h2>
-
 <div id="songFields">
 <label for="editTitle">Nombre de la canción</label>
 <input id="editTitle" placeholder="Título de la canción">
@@ -272,6 +194,11 @@ h1 span{color:#ff4d4d}
 <input id="editGenre" placeholder="Ej. Regional mexicano">
 <label for="editDate">Fecha de lanzamiento</label>
 <input id="editDate" type="date">
+<label for="editReleaseType">Categoría de la canción</label>
+<select id="editReleaseType">
+<option value="lanzamientos">Lanzamientos (ya estrenada)</option>
+<option value="ineditas">Inéditas (sin estreno oficial)</option>
+</select>
 </div>
 
 <div id="artistFields" style="display:none">
@@ -283,7 +210,6 @@ h1 span{color:#ff4d4d}
 <input id="artistImageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
 <p id="currentArtistImage" style="margin-top:8px"></p>
 </div>
-
 <div class="editorButtons">
 <button onclick="saveEditor()">Guardar</button>
 <button class="cancel" onclick="closeEditor()">Cancelar</button>
@@ -291,34 +217,25 @@ h1 span{color:#ff4d4d}
 </div>
 </div>
 
-<!-- PANTALLA COMPLETA DEL REPRODUCTOR -->
 <div id="fullPlayer">
- <div class="fullTop">
-  <button onclick="closeFullPlayer()">↓ Volver</button>
-  <small>REPRODUCIENDO DESDE MONTANA</small>
-  <span></span>
- </div>
-
- <div class="fullCover" id="fullCover">♫</div>
-
- <div class="fullInfo">
-  <h2 id="fullTitle">Nombre de la canción</h2>
-  <p id="fullArtist">Nombre del artista</p>
- </div>
-
- <div class="progressArea">
-  <input id="progress" type="range" min="0" max="100" value="0" step="0.1" oninput="seekTo(this.value)">
-  <div class="timeLabels">
-   <span id="currentTime">0:00</span>
-   <span id="duration">0:00</span>
-  </div>
- </div>
-
- <div class="fullControls">
-  <button onclick="previous()">|◀</button>
-  <button class="bigPlay" id="fullPlayBtn" onclick="toggle()">▶</button>
-  <button onclick="next()">▶|</button>
- </div>
+<div class="fullTop">
+<button onclick="closeFullPlayer()">↓ Volver</button>
+<small>REPRODUCIENDO DESDE MONTANA</small><span></span>
+</div>
+<div class="fullCover" id="fullCover">♫</div>
+<div class="fullInfo">
+<h2 id="fullTitle">Nombre de la canción</h2>
+<p id="fullArtist">Nombre del artista</p>
+</div>
+<div class="progressArea">
+<input id="progress" type="range" min="0" max="100" value="0" step="0.1" oninput="seekTo(this.value)">
+<div class="timeLabels"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
+</div>
+<div class="fullControls">
+<button onclick="previous()">|◀</button>
+<button class="bigPlay" id="fullPlayBtn" onclick="toggle()">▶</button>
+<button onclick="next()">▶|</button>
+</div>
 </div>
 
 <footer class="player">
@@ -332,7 +249,6 @@ h1 span{color:#ff4d4d}
 <button onclick="next()">▶|</button>
 </div>
 </footer>
-
 <audio id="audio"></audio>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -350,47 +266,60 @@ const audio=document.getElementById('audio');
 const library=document.getElementById('library');
 const statusBox=document.getElementById('status');
 
-let songs=[];
-let coverFiles=[];
-let metadata={};
-let artists=[];
-let index=-1;
-let isAdmin=false;
-let editingSong=null;
-let editingArtist=null;
-let editorMode='song';
-let currentArtist=null;
+let songs=[],coverFiles=[],metadata={},artists=[];
+let index=-1,isAdmin=false,editingSong=null,editingArtist=null;
+let editorMode='song',currentArtist=null,currentView='home';
 
 function status(message){statusBox.textContent=message}
 function getInfo(song){return metadata[song.path]||{}}
 function songTitle(song){return getInfo(song).title||song.name}
 function songArtist(song){return getInfo(song).artist||'Artista independiente'}
+function songCategory(song){return getInfo(song).release_type==='ineditas'?'ineditas':'lanzamientos'}
 
 function displayDate(value){
  if(!value)return 'Fecha no disponible';
  const date=new Date(value);
  return isNaN(date)?'Fecha no disponible':date.toLocaleDateString('es-MX');
 }
-
 function artistNames(value){
  return (value||'').split(/[,·]/).map(x=>x.trim()).filter(Boolean);
 }
 
+function setActiveNav(id){
+ ['navHome','navLaunches','navUnreleased','navArtists'].forEach(x=>{
+  document.getElementById(x).classList.toggle('active',x===id);
+ });
+}
+function hideMainViews(){
+ ['homeView','launchesView','unreleasedView','artistsView','artistProfile'].forEach(id=>{
+  document.getElementById(id).style.display='none';
+ });
+}
 function showHome(){
+ currentView='home';hideMainViews();
  document.getElementById('homeView').style.display='block';
- document.getElementById('artistsView').style.display='none';
- document.getElementById('artistProfile').style.display='none';
- document.getElementById('navHome').classList.add('active');
- document.getElementById('navArtists').classList.remove('active');
+ setActiveNav('navHome');
+ renderSongs();
  window.scrollTo({top:0,behavior:'smooth'});
 }
-
+function showLaunches(){
+ currentView='launches';hideMainViews();
+ document.getElementById('launchesView').style.display='block';
+ setActiveNav('navLaunches');
+ renderSongs();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function showUnreleased(){
+ currentView='unreleased';hideMainViews();
+ document.getElementById('unreleasedView').style.display='block';
+ setActiveNav('navUnreleased');
+ renderSongs();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
 function showArtists(){
- document.getElementById('homeView').style.display='none';
+ currentView='artists';hideMainViews();
  document.getElementById('artistsView').style.display='block';
- document.getElementById('artistProfile').style.display='none';
- document.getElementById('navHome').classList.remove('active');
- document.getElementById('navArtists').classList.add('active');
+ setActiveNav('navArtists');
  renderArtists();
  window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -398,321 +327,184 @@ function showArtists(){
 async function showArtistProfile(id){
  const artist=artists.find(a=>a.id===id);
  if(!artist)return;
- currentArtist=artist;
-
- document.getElementById('homeView').style.display='none';
- document.getElementById('artistsView').style.display='none';
+ currentArtist=artist;currentView='artistProfile';hideMainViews();
  document.getElementById('artistProfile').style.display='block';
-
+ setActiveNav('navArtists');
  document.getElementById('profileName').textContent=artist.name;
  document.getElementById('profileBio').textContent=artist.biography||'Artista de MONTANA MUSIC';
-
  const photo=document.getElementById('profilePhoto');
  photo.innerHTML='♫';
-
  if(artist.image_path){
-  const {data}=await db.storage.from(COVER_BUCKET)
-   .createSignedUrl(artist.image_path,3600);
+  const {data}=await db.storage.from(COVER_BUCKET).createSignedUrl(artist.image_path,3600);
   if(data?.signedUrl){
-   const img=document.createElement('img');
-   img.src=data.signedUrl;
-   img.alt='Fotografía de '+artist.name;
-   photo.appendChild(img);
+   const img=document.createElement('img');img.src=data.signedUrl;
+   img.alt='Fotografía de '+artist.name;photo.appendChild(img);
   }
  }
-
- const songsArea=document.getElementById('artistSongs');
- songsArea.innerHTML='';
-
- const matching=songs.filter(song=>
-  artistNames(songArtist(song)).some(n=>
-   n.toLowerCase()===artist.name.toLowerCase()
-  )
- );
-
- if(!matching.length){
-  songsArea.innerHTML='<p class="empty">Todavía no hay canciones asociadas a este artista.</p>';
- }else{
-  for(const song of matching){
-   const songIndex=songs.indexOf(song);
-   const card=await createSongCard(song,songIndex,false);
-   songsArea.appendChild(card);
-  }
- }
-
+ const area=document.getElementById('artistSongs');area.innerHTML='';
+ const matching=songs.filter(song=>artistNames(songArtist(song)).some(n=>n.toLowerCase()===artist.name.toLowerCase()));
+ if(!matching.length)area.innerHTML='<p class="empty">Todavía no hay canciones asociadas a este artista.</p>';
+ else for(const song of matching)area.appendChild(await createSongCard(song,songs.indexOf(song),false));
  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 async function loadSongs(){
  status('Buscando canciones...');
-
- const {data,error}=await db.storage.from(BUCKET).list('',{
-  limit:1000,sortBy:{column:'created_at',order:'desc'}
- });
-
+ const {data,error}=await db.storage.from(BUCKET).list('',{limit:1000,sortBy:{column:'created_at',order:'desc'}});
  if(error){status('Error al cargar canciones: '+error.message);return}
-
- songs=(data||[])
-  .filter(f=>f.name&&!f.name.startsWith('.'))
-  .map(f=>({
-   name:f.name.replace(/^\d+-/,'').replace(/\.[^.]+$/,''),
-   path:f.name,
-   created_at:f.created_at||f.updated_at||null
-  }));
-
+ songs=(data||[]).filter(f=>f.name&&!f.name.startsWith('.')).map(f=>({
+  name:f.name.replace(/^\d+-/,'').replace(/\.[^.]+$/,''),
+  path:f.name,created_at:f.created_at||f.updated_at||null
+ }));
  const {data:coverData}=await db.storage.from(COVER_BUCKET).list('',{limit:1000});
  coverFiles=coverData||[];
-
  const {data:metaData,error:metaError}=await db.from(META_TABLE).select('*');
  metadata={};
  if(!metaError)(metaData||[]).forEach(m=>metadata[m.storage_path]=m);
-
  await renderSongs();
- document.getElementById('total').textContent=songs.length+' canciones';
-
+ const launches=songs.filter(s=>songCategory(s)==='lanzamientos').length;
+ const unreleased=songs.length-launches;
+ document.getElementById('total').textContent=launches+' lanzamientos';
+ document.getElementById('launchTotal').textContent=launches+' canciones';
+ document.getElementById('unreleasedTotal').textContent=unreleased+' canciones';
  if(metaError)status('Canciones cargadas. No se pudo leer su información: '+metaError.message);
  else status(songs.length?'Biblioteca actualizada.':'Todavía no hay canciones.');
 }
 
 async function loadArtists(){
  const {data,error}=await db.from(ARTIST_TABLE).select('*').order('name');
- if(error){
-  status('No se pudieron cargar los artistas: '+error.message);
-  return;
- }
- artists=data||[];
- await renderArtists();
+ if(error){status('No se pudieron cargar los artistas: '+error.message);return}
+ artists=data||[];await renderArtists();
 }
 
 async function createSongCard(song,i,adminTools=true){
- const info=getInfo(song);
- const card=document.createElement('div');
+ const info=getInfo(song),card=document.createElement('div');
  card.className='card';
-
- const cover=document.createElement('div');
- cover.className='cover';
- cover.textContent='♫';
-
- const playButton=document.createElement('button');
- playButton.textContent='▶';
- playButton.onclick=()=>play(i);
+ const cover=document.createElement('div');cover.className='cover';cover.textContent='♫';
+ const playButton=document.createElement('button');playButton.textContent='▶';playButton.onclick=()=>play(i);
  cover.appendChild(playButton);
-
- const matchingCover=coverFiles.find(f=>
-  f.name&&f.name.startsWith(song.path+'__cover_')
- );
-
+ const matchingCover=coverFiles.find(f=>f.name&&f.name.startsWith(song.path+'__cover_'));
  if(matchingCover){
-  const {data}=await db.storage.from(COVER_BUCKET)
-   .createSignedUrl(matchingCover.name,3600);
-  if(data?.signedUrl){
-   const img=document.createElement('img');
-   img.src=data.signedUrl;
-   img.alt='Portada de '+songTitle(song);
-   cover.insertBefore(img,playButton);
-  }
+  const {data}=await db.storage.from(COVER_BUCKET).createSignedUrl(matchingCover.name,3600);
+  if(data?.signedUrl){const img=document.createElement('img');img.src=data.signedUrl;img.alt='Portada de '+songTitle(song);cover.insertBefore(img,playButton)}
  }
-
- const title=document.createElement('h3');
- title.textContent=songTitle(song);
- title.onclick=()=>play(i);
-
- const artistArea=document.createElement('div');
- artistArea.className='artistLinks';
+ const title=document.createElement('h3');title.textContent=songTitle(song);title.onclick=()=>play(i);
+ const artistArea=document.createElement('div');artistArea.className='artistLinks';
  const names=artistNames(songArtist(song));
-
- if(names.length){
-  names.forEach((name,pos)=>{
-   const button=document.createElement('button');
-   button.textContent=name+(pos<names.length-1?' ·':'');
-   button.onclick=()=>openArtistByName(name);
-   artistArea.appendChild(button);
-  });
- }else{
-  const noArtist=document.createElement('p');
-  noArtist.textContent='Artista independiente';
-  artistArea.appendChild(noArtist);
- }
-
+ if(names.length)names.forEach((name,pos)=>{
+  const button=document.createElement('button');button.textContent=name+(pos<names.length-1?' ·':'');
+  button.onclick=()=>openArtistByName(name);artistArea.appendChild(button);
+ });
+ else{const p=document.createElement('p');p.textContent='Artista independiente';artistArea.appendChild(p)}
  card.append(cover,title,artistArea);
-
- if(info.album){
-  const album=document.createElement('small');
-  album.textContent='Álbum: '+info.album;
-  card.appendChild(album);
- }
- if(info.genre){
-  const genre=document.createElement('small');
-  genre.textContent='Género: '+info.genre;
-  card.appendChild(genre);
- }
-
- const date=document.createElement('small');
- date.textContent='Subida: '+displayDate(song.created_at);
- card.appendChild(date);
-
+ const category=document.createElement('small');
+ category.textContent=songCategory(song)==='ineditas'?'✦ Inédita':'♫ Lanzamiento';
+ card.appendChild(category);
+ if(info.album){const x=document.createElement('small');x.textContent='Álbum: '+info.album;card.appendChild(x)}
+ if(info.genre){const x=document.createElement('small');x.textContent='Género: '+info.genre;card.appendChild(x)}
+ const date=document.createElement('small');date.textContent='Subida: '+displayDate(song.created_at);card.appendChild(date);
  if(isAdmin&&adminTools){
-  const tools=document.createElement('div');
-  tools.className='coverTools';
-
-  const edit=document.createElement('button');
-  edit.textContent='✏️ Editar información';
-  edit.onclick=()=>openSongEditor(song);
-
-  const coverButton=document.createElement('button');
-  coverButton.textContent='＋ Cambiar portada';
-
-  const input=document.createElement('input');
-  input.type='file';
-  input.accept='image/jpeg,image/png,image/webp,image/gif';
-  input.style.display='none';
-  coverButton.onclick=()=>input.click();
-  input.onchange=()=>uploadCover(song,input);
-
-  tools.append(edit,coverButton,input);
-  card.appendChild(tools);
+  const tools=document.createElement('div');tools.className='coverTools';
+  const edit=document.createElement('button');edit.textContent='✏️ Editar información';edit.onclick=()=>openSongEditor(song);
+  const coverButton=document.createElement('button');coverButton.textContent='＋ Cambiar portada';
+  const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,image/webp,image/gif';input.style.display='none';
+  coverButton.onclick=()=>input.click();input.onchange=()=>uploadCover(song,input);
+  tools.append(edit,coverButton,input);card.appendChild(tools);
  }
  return card;
 }
 
+async function fillSongGrid(elementId,list){
+ const grid=document.getElementById(elementId);grid.innerHTML='';
+ if(!list.length){grid.innerHTML='<p class="empty">Todavía no hay canciones en esta sección.</p>';return}
+ for(const song of list)grid.appendChild(await createSongCard(song,songs.indexOf(song),true));
+}
 async function renderSongs(){
- library.innerHTML='';
- for(let i=0;i<songs.length;i++){
-  library.appendChild(await createSongCard(songs[i],i,true));
- }
+ const launches=songs.filter(s=>songCategory(s)==='lanzamientos');
+ const unreleased=songs.filter(s=>songCategory(s)==='ineditas');
+ await fillSongGrid('library',launches);
+ await fillSongGrid('launchLibrary',launches);
+ await fillSongGrid('unreleasedLibrary',unreleased);
 }
 
 async function renderArtists(){
- const grid=document.getElementById('artistGrid');
- grid.innerHTML='';
+ const grid=document.getElementById('artistGrid');grid.innerHTML='';
  document.getElementById('artistTotal').textContent=artists.length+' artistas';
-
- if(!artists.length){
-  grid.innerHTML='<p class="empty">Todavía no hay artistas registrados.</p>';
-  return;
- }
-
+ if(!artists.length){grid.innerHTML='<p class="empty">Todavía no hay artistas registrados.</p>';return}
  for(const artist of artists){
-  const card=document.createElement('div');
-  card.className='artistCard';
-
-  const photo=document.createElement('div');
-  photo.className='artistPhoto';
-  photo.textContent='♫';
-
+  const card=document.createElement('div');card.className='artistCard';
+  const photo=document.createElement('div');photo.className='artistPhoto';photo.textContent='♫';
   if(artist.image_path){
-   const {data}=await db.storage.from(COVER_BUCKET)
-    .createSignedUrl(artist.image_path,3600);
-   if(data?.signedUrl){
-    const img=document.createElement('img');
-    img.src=data.signedUrl;
-    img.alt=artist.name;
-    photo.appendChild(img);
-   }
+   const {data}=await db.storage.from(COVER_BUCKET).createSignedUrl(artist.image_path,3600);
+   if(data?.signedUrl){const img=document.createElement('img');img.src=data.signedUrl;img.alt=artist.name;photo.appendChild(img)}
   }
-
-  const name=document.createElement('h3');
-  name.textContent=artist.name;
-
-  const open=document.createElement('button');
-  open.textContent='Ver perfil →';
-  open.onclick=()=>showArtistProfile(artist.id);
-
+  const name=document.createElement('h3');name.textContent=artist.name;
+  const open=document.createElement('button');open.textContent='Ver perfil →';open.onclick=()=>showArtistProfile(artist.id);
   card.append(photo,name,open);
-
-  if(isAdmin){
-   const edit=document.createElement('button');
-   edit.textContent=' · Editar';
-   edit.onclick=()=>openArtistEditor(artist);
-   card.appendChild(edit);
-  }
+  if(isAdmin){const edit=document.createElement('button');edit.textContent=' · Editar';edit.onclick=()=>openArtistEditor(artist);card.appendChild(edit)}
   grid.appendChild(card);
  }
 }
-
 function openArtistByName(name){
  const artist=artists.find(a=>a.name.toLowerCase()===name.toLowerCase());
- if(artist){
-  showArtistProfile(artist.id);
- }else{
-  alert('Este artista todavía no tiene un perfil creado en MONTANA MUSIC.');
- }
+ if(artist)showArtistProfile(artist.id);
+ else alert('Este artista todavía no tiene un perfil creado en MONTANA MUSIC.');
 }
 
 function openSongEditor(song){
  if(!isAdmin)return;
- editorMode='song';
- editingSong=song;
- editingArtist=null;
+ editorMode='song';editingSong=song;editingArtist=null;
  const info=getInfo(song);
-
  document.getElementById('editorTitle').textContent='Editar canción';
  document.getElementById('songFields').style.display='block';
  document.getElementById('artistFields').style.display='none';
-
  document.getElementById('editTitle').value=info.title||song.name;
  document.getElementById('editArtist').value=info.artist||'';
  document.getElementById('editAlbum').value=info.album||'';
  document.getElementById('editGenre').value=info.genre||'';
  document.getElementById('editDate').value=info.release_date||'';
+ document.getElementById('editReleaseType').value=songCategory(song);
  document.getElementById('editor').style.display='block';
 }
-
 function openArtistEditor(artist=null){
  if(!isAdmin)return;
- editorMode='artist';
- editingArtist=artist;
- editingSong=null;
-
+ editorMode='artist';editingArtist=artist;editingSong=null;
  document.getElementById('editorTitle').textContent=artist?'Editar artista':'Crear artista';
  document.getElementById('songFields').style.display='none';
  document.getElementById('artistFields').style.display='block';
-
  document.getElementById('artistNameInput').value=artist?.name||'';
  document.getElementById('artistBioInput').value=artist?.biography||'';
  document.getElementById('artistImageInput').value='';
- document.getElementById('currentArtistImage').textContent=
-  artist?.image_path?'Este artista ya tiene una fotografía guardada.':'Puedes seleccionar una fotografía.';
-
+ document.getElementById('currentArtistImage').textContent=artist?.image_path?'Este artista ya tiene una fotografía guardada.':'Puedes seleccionar una fotografía.';
  document.getElementById('editor').style.display='block';
 }
-
 function closeEditor(){
- document.getElementById('editor').style.display='none';
- editingSong=null;
- editingArtist=null;
+ document.getElementById('editor').style.display='none';editingSong=null;editingArtist=null;
 }
-
 async function saveEditor(){
  if(!isAdmin)return;
  if(editorMode==='song')return saveSongMetadata();
  if(editorMode==='artist')return saveArtist();
 }
-
 async function saveSongMetadata(){
  if(!editingSong)return;
  const title=document.getElementById('editTitle').value.trim();
  if(!title){alert('Escribe el nombre de la canción.');return}
-
  const record={
-  storage_path:editingSong.path,
-  title:title,
+  storage_path:editingSong.path,title,
   artist:document.getElementById('editArtist').value.trim()||'Artista independiente',
   album:document.getElementById('editAlbum').value.trim(),
   genre:document.getElementById('editGenre').value.trim(),
   release_date:document.getElementById('editDate').value||null,
+  release_type:document.getElementById('editReleaseType').value,
   uploaded_at:editingSong.created_at||new Date().toISOString(),
   updated_at:new Date().toISOString()
  };
-
  status('Guardando información de la canción...');
  const {error}=await db.from(META_TABLE).upsert(record,{onConflict:'storage_path'});
  if(error){status('No se pudo guardar: '+error.message);return}
-
  metadata[editingSong.path]=record;
- closeEditor();
- await renderSongs();
- await loadArtists();
+ closeEditor();await renderSongs();await loadArtists();
  status('¡Información de canción guardada!');
 }
 
@@ -720,196 +512,92 @@ async function saveArtist(){
  const name=document.getElementById('artistNameInput').value.trim();
  const biography=document.getElementById('artistBioInput').value.trim();
  const imageFile=document.getElementById('artistImageInput').files[0];
-
  if(!name){alert('Escribe el nombre del artista.');return}
-
  status('Guardando perfil de artista...');
  let imagePath=editingArtist?.image_path||'';
-
  if(imageFile){
-  const extensions={
-   'image/jpeg':'jpg','image/png':'png',
-   'image/webp':'webp','image/gif':'gif'
-  };
+  const extensions={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'};
   const ext=extensions[imageFile.type];
   if(!ext){status('Selecciona una imagen JPG, PNG, WEBP o GIF.');return}
   if(imageFile.size>10*1024*1024){status('La imagen debe pesar menos de 10 MB.');return}
-
   const slug=name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   imagePath='artist__'+slug+'_'+Date.now()+'.'+ext;
-
-  const {error:uploadError}=await db.storage.from(COVER_BUCKET).upload(imagePath,imageFile,{
-   contentType:imageFile.type,upsert:false
-  });
+  const {error:uploadError}=await db.storage.from(COVER_BUCKET).upload(imagePath,imageFile,{contentType:imageFile.type,upsert:false});
   if(uploadError){status('Error al subir fotografía: '+uploadError.message);return}
  }
-
- const record={
-  name:name,
-  biography:biography,
-  image_path:imagePath,
-  updated_at:new Date().toISOString()
- };
-
+ const record={name,biography,image_path:imagePath,updated_at:new Date().toISOString()};
  let result;
- if(editingArtist){
-  result=await db.from(ARTIST_TABLE).update(record).eq('id',editingArtist.id);
- }else{
-  result=await db.from(ARTIST_TABLE).insert(record);
- }
-
- if(result.error){
-  status('No se pudo guardar el artista: '+result.error.message);
-  return;
- }
-
- closeEditor();
- await loadArtists();
- status('¡Perfil de artista guardado correctamente!');
+ if(editingArtist)result=await db.from(ARTIST_TABLE).update(record).eq('id',editingArtist.id);
+ else result=await db.from(ARTIST_TABLE).insert(record);
+ if(result.error){status('No se pudo guardar el artista: '+result.error.message);return}
+ closeEditor();await loadArtists();status('¡Perfil de artista guardado correctamente!');
 }
 
 async function uploadCover(song,input){
- const file=input.files?.[0];
- if(!file)return;
+ const file=input.files?.[0];if(!file)return;
  if(!isAdmin)return;
  if(file.size>10*1024*1024){status('La imagen debe pesar menos de 10 MB.');input.value='';return}
-
  const extensions={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'};
  const ext=extensions[file.type];
  if(!ext){status('Usa una imagen JPG, PNG, WEBP o GIF.');input.value='';return}
-
  status('Subiendo portada...');
  const path=song.path+'__cover_'+Date.now()+'.'+ext;
- const {error}=await db.storage.from(COVER_BUCKET).upload(path,file,{
-  contentType:file.type,upsert:false
- });
+ const {error}=await db.storage.from(COVER_BUCKET).upload(path,file,{contentType:file.type,upsert:false});
  input.value='';
  if(error){status('Error al subir portada: '+error.message);return}
- status('¡Portada guardada!');
- await loadSongs();
+ status('¡Portada guardada!');await loadSongs();
 }
 
-/* REPRODUCCIÓN Y PANTALLA COMPLETA */
 async function play(i){
  if(!songs[i])return;
- index=i;
- status('Preparando reproducción...');
-
+ index=i;status('Preparando reproducción...');
  const {data,error}=await db.storage.from(BUCKET).createSignedUrl(songs[i].path,3600);
- if(error){
-  status('No se pudo reproducir: '+error.message);
-  return;
- }
-
+ if(error){status('No se pudo reproducir: '+error.message);return}
  audio.src=data.signedUrl;
-
- const title=songTitle(songs[i]);
- const artist=songArtist(songs[i]);
-
+ const title=songTitle(songs[i]),artist=songArtist(songs[i]);
  document.getElementById('songTitle').textContent=title;
  document.getElementById('artist').textContent=artist;
  document.getElementById('fullTitle').textContent=title;
  document.getElementById('fullArtist').textContent=artist;
-
- const fullCover=document.getElementById('fullCover');
- fullCover.innerHTML='♫';
-
- const matchingCover=coverFiles.find(f=>
-  f.name&&f.name.startsWith(songs[i].path+'__cover_')
- );
-
+ const fullCover=document.getElementById('fullCover');fullCover.innerHTML='♫';
+ const matchingCover=coverFiles.find(f=>f.name&&f.name.startsWith(songs[i].path+'__cover_'));
  if(matchingCover){
-  const {data:coverData}=await db.storage.from(COVER_BUCKET)
-   .createSignedUrl(matchingCover.name,3600);
-
-  if(coverData?.signedUrl){
-   const img=document.createElement('img');
-   img.src=coverData.signedUrl;
-   img.alt='Portada de '+title;
-   fullCover.appendChild(img);
-  }
+  const {data:coverData}=await db.storage.from(COVER_BUCKET).createSignedUrl(matchingCover.name,3600);
+  if(coverData?.signedUrl){const img=document.createElement('img');img.src=coverData.signedUrl;img.alt='Portada de '+title;fullCover.appendChild(img)}
  }
-
  document.getElementById('fullPlayer').style.display='block';
  document.getElementById('progress').value=0;
  document.getElementById('currentTime').textContent='0:00';
  document.getElementById('duration').textContent='0:00';
-
- try{
-  await audio.play();
- }catch(e){
-  status('Toca reproducir para escuchar.');
- }
+ try{await audio.play()}catch(e){status('Toca reproducir para escuchar.')}
 }
-
-function openFullPlayer(){
- if(index>=0){
-  document.getElementById('fullPlayer').style.display='block';
- }
-}
-
-function closeFullPlayer(){
- document.getElementById('fullPlayer').style.display='none';
-}
-
+function openFullPlayer(){if(index>=0)document.getElementById('fullPlayer').style.display='block'}
+function closeFullPlayer(){document.getElementById('fullPlayer').style.display='none'}
 function formatTime(seconds){
  if(!Number.isFinite(seconds))return '0:00';
- const mins=Math.floor(seconds/60);
- const secs=Math.floor(seconds%60);
+ const mins=Math.floor(seconds/60),secs=Math.floor(seconds%60);
  return mins+':'+String(secs).padStart(2,'0');
 }
-
-function seekTo(value){
- if(Number.isFinite(audio.duration)){
-  audio.currentTime=(Number(value)/100)*audio.duration;
- }
-}
-
+function seekTo(value){if(Number.isFinite(audio.duration))audio.currentTime=(Number(value)/100)*audio.duration}
 function toggle(){
- if(index<0){
-  if(songs.length)play(0);
-  return;
- }
- if(audio.paused){
-  audio.play().catch(()=>status('No se pudo continuar la reproducción.'));
- }else{
-  audio.pause();
- }
+ if(index<0){if(songs.length)play(0);return}
+ if(audio.paused)audio.play().catch(()=>status('No se pudo continuar la reproducción.'));
+ else audio.pause();
 }
-
-function next(){
- if(songs.length)play((index+1)%songs.length);
-}
-
-function previous(){
- if(songs.length)play((index-1+songs.length)%songs.length);
-}
-
+function next(){if(songs.length)play((index+1)%songs.length)}
+function previous(){if(songs.length)play((index-1+songs.length)%songs.length)}
 audio.ontimeupdate=()=>{
  if(!Number.isFinite(audio.duration)||audio.duration<=0)return;
-
- document.getElementById('progress').value=
-  (audio.currentTime/audio.duration)*100;
-
- document.getElementById('currentTime').textContent=
-  formatTime(audio.currentTime);
-
- document.getElementById('duration').textContent=
-  formatTime(audio.duration);
+ document.getElementById('progress').value=(audio.currentTime/audio.duration)*100;
+ document.getElementById('currentTime').textContent=formatTime(audio.currentTime);
+ document.getElementById('duration').textContent=formatTime(audio.duration);
 };
-
-audio.onloadedmetadata=()=>{
- document.getElementById('duration').textContent=
-  formatTime(audio.duration);
-};
-
+audio.onloadedmetadata=()=>document.getElementById('duration').textContent=formatTime(audio.duration);
 audio.onended=next;
-
 audio.onplay=()=>{
  document.getElementById('playBtn').textContent='Ⅱ';
  document.getElementById('fullPlayBtn').textContent='Ⅱ';
 };
-
 audio.onpause=()=>{
  document.getElementById('playBtn').textContent='▶';
  document.getElementById('fullPlayBtn').textContent='▶';
@@ -919,58 +607,41 @@ async function checkUser(){
  const {data,error}=await db.auth.getUser();
  const user=data?.user;
  isAdmin=!error&&!!user&&user.id===ADMIN_ID;
-
  document.getElementById('loginArea').style.display=isAdmin?'none':'block';
  document.getElementById('adminArea').style.display=isAdmin?'block':'none';
-
  if(songs.length)await renderSongs();
  if(artists.length)await renderArtists();
 }
-
 async function login(){
  const email=document.getElementById('email').value.trim();
  const password=document.getElementById('password').value;
  if(!email||!password){status('Escribe tu correo y contraseña.');return}
-
  status('Iniciando sesión...');
  const {data,error}=await db.auth.signInWithPassword({email,password});
  if(error){status('No se pudo iniciar sesión: '+error.message);return}
-
  if(data.user.id!==ADMIN_ID){
-  await db.auth.signOut();
-  status('Esta cuenta no tiene permiso de administrador.');
-  return;
+  await db.auth.signOut();status('Esta cuenta no tiene permiso de administrador.');return;
  }
- await checkUser();
- status('Sesión de administrador iniciada.');
+ await checkUser();status('Sesión de administrador iniciada.');
 }
-
 async function logout(){
- await db.auth.signOut();
- await checkUser();
- status('Sesión cerrada.');
+ await db.auth.signOut();await checkUser();status('Sesión cerrada.');
 }
 
 document.getElementById('files').addEventListener('change',async e=>{
  const files=[...e.target.files].filter(f=>f.type.startsWith('audio/'));
  if(!files.length){status('Selecciona archivos de audio.');return}
-
  for(const file of files){
   status('Subiendo '+file.name+'...');
   const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
   const path=Date.now()+'-'+safeName;
-  const {error}=await db.storage.from(BUCKET).upload(path,file,{
-   contentType:file.type,upsert:false
-  });
+  const {error}=await db.storage.from(BUCKET).upload(path,file,{contentType:file.type,upsert:false});
   if(error){status('Error al subir: '+error.message);e.target.value='';return}
  }
- e.target.value='';
- status('¡Canciones subidas correctamente!');
- await loadSongs();
+ e.target.value='';status('¡Canciones subidas correctamente!');await loadSongs();
 });
 
 db.auth.onAuthStateChange(()=>checkUser());
-
 async function init(){
  await checkUser();
  await loadSongs();
