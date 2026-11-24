@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#09090d">
 <title>MONTANA MUSIC | Descubre nuevos sonidos</title>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#09090d;color:white;font-family:Arial,sans-serif;padding-bottom:100px}
@@ -30,10 +30,14 @@ h1 span{color:#ff4d4d}
 .heading small{color:#92899c}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .card{background:#17151c;padding:11px;border:1px solid #29232f;border-radius:13px;min-width:0}
-.cover{height:auto;aspect-ratio:1;border-radius:9px;display:grid;place-items:center;font-size:42px;background:linear-gradient(145deg,#b91c1c,#21162d 70%,#d28cfa);position:relative}
-.cover button{position:absolute;bottom:9px;right:9px;background:#a16aee;width:39px;height:39px;border-radius:50%;font-size:18px}
+.cover{height:auto;aspect-ratio:1;border-radius:9px;display:grid;place-items:center;font-size:42px;background:linear-gradient(145deg,#b91c1c,#21162d 70%,#d28cfa);position:relative;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.cover button{position:absolute;bottom:9px;right:9px;background:#a16aee;width:39px;height:39px;border-radius:50%;font-size:18px;z-index:2}
 .card h3{font-size:13px;margin:12px 0 6px;overflow-wrap:anywhere}
 .card p{font-size:11px;color:#a49bab}
+.coverTools{margin-top:10px}
+.coverTools button{background:#382746;color:white;padding:9px 10px;border-radius:7px;font-size:11px}
+.coverTools input{display:none}
 .upload{margin-top:25px;padding:20px;background:#17131e;border:1px solid #382746;border-radius:12px}
 .upload h3{font-size:15px;margin-bottom:8px}
 .upload p{font-size:12px;color:#aaa;margin-bottom:15px;line-height:1.6}
@@ -51,9 +55,15 @@ h1 span{color:#ff4d4d}
 .controls{display:flex;align-items:center;gap:12px}
 .controls button{background:none;font-size:18px}
 .controls .play{background:white;color:#111;border-radius:50%;width:38px;height:38px}
-@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}main{padding-top:40px}.hero{padding:55px}.player{padding:14px 6%}}
+@media(min-width:650px){
+.grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+main{padding-top:40px}
+.hero{padding:55px}
+.player{padding:14px 6%}
+}
 </style>
 </head>
+
 <body>
 <header>
 <div class="logo">MONTANA<span>MUSIC</span></div>
@@ -100,6 +110,7 @@ h1 span{color:#ff4d4d}
 <label for="files">＋ Seleccionar canciones</label>
 <input id="files" type="file" accept="audio/*" multiple hidden>
 <button class="action" onclick="logout()">Cerrar sesión</button>
+<p>También puedes cambiar las portadas desde cada canción de la biblioteca.</p>
 </div>
 </section>
 
@@ -132,11 +143,15 @@ const SUPABASE_KEY = 'sb_publishable_JmmSkTtDprmR8bSbkwwgKQ_dFybMEsT';
 
 const ADMIN_ID = 'be15df56-f1a4-4734-9a3c-86d6e857e00c';
 const BUCKET = 'montana-canciones';
+const COVER_BUCKET = 'montana-portadas';
 
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const audio = document.getElementById('audio');
+
 let songs = [];
+let coverFiles = [];
 let index = -1;
+let isAdmin = false;
 
 const library = document.getElementById('library');
 const statusBox = document.getElementById('status');
@@ -150,7 +165,7 @@ async function loadSongs(){
  status('Buscando canciones en la nube...');
 
  const {data,error} = await db.storage.from(BUCKET).list('',{
-  limit:100,
+  limit:1000,
   sortBy:{column:'created_at',order:'desc'}
  });
 
@@ -162,25 +177,168 @@ async function loadSongs(){
 
  songs = (data||[])
   .filter(file=>file.name && !file.name.startsWith('.'))
-  .map(file=>({name:file.name.replace(/^\d+-/, '').replace(/\.[^.]+$/,''),path:file.name}));
+  .map(file=>({
+   name:file.name.replace(/^\d+-/, '').replace(/\.[^.]+$/,''),
+   path:file.name
+  }));
 
- songs.forEach((song,i)=>{
-  const card = document.createElement('div');
-  card.className='card';
-  card.innerHTML='<div class="cover">♫<button type="button">▶</button></div><h3></h3><p>Artista independiente</p>';
-  card.querySelector('h3').textContent=song.name;
-  card.querySelector('button').onclick=()=>play(i);
-  library.appendChild(card);
- });
+ const {data:coverData,error:coverError} =
+  await db.storage.from(COVER_BUCKET).list('',{
+   limit:1000,
+   sortBy:{column:'created_at',order:'desc'}
+  });
+
+ coverFiles = coverError ? [] : (coverData||[]);
+
+ renderSongs();
 
  document.getElementById('total').textContent=songs.length+' canciones';
- status(songs.length ? 'Disfruta la música de MONTANA MUSIC.' : 'Todavía no hay canciones en la biblioteca.');
+
+ if(coverError){
+  status('Canciones cargadas. No se pudieron consultar las portadas: '+coverError.message);
+ }else{
+  status(songs.length ? 'Disfruta la música de MONTANA MUSIC.' : 'Todavía no hay canciones en la biblioteca.');
+ }
+}
+
+async function renderSongs(){
+ library.innerHTML = '';
+
+ for(let i=0;i<songs.length;i++){
+  const song=songs[i];
+
+  const card=document.createElement('div');
+  card.className='card';
+
+  const cover=document.createElement('div');
+  cover.className='cover';
+  cover.textContent='♫';
+
+  const playButton=document.createElement('button');
+  playButton.type='button';
+  playButton.textContent='▶';
+  playButton.setAttribute('aria-label','Reproducir canción');
+  playButton.onclick=()=>play(i);
+  cover.appendChild(playButton);
+
+  const title=document.createElement('h3');
+  title.textContent=song.name;
+
+  const artist=document.createElement('p');
+  artist.textContent='Artista independiente';
+
+  card.appendChild(cover);
+  card.appendChild(title);
+  card.appendChild(artist);
+
+  const matchingCover=coverFiles.find(file=>
+   file.name && file.name.startsWith(song.path+'__cover_')
+  );
+
+  if(matchingCover){
+   const {data,error}=await db.storage
+    .from(COVER_BUCKET)
+    .createSignedUrl(matchingCover.name,3600);
+
+   if(!error && data?.signedUrl){
+    const img=document.createElement('img');
+    img.src=data.signedUrl;
+    img.alt='Portada de '+song.name;
+    cover.insertBefore(img,playButton);
+   }
+  }
+
+  if(isAdmin){
+   const tools=document.createElement('div');
+   tools.className='coverTools';
+
+   const button=document.createElement('button');
+   button.type='button';
+   button.textContent='＋ Cambiar portada';
+
+   const input=document.createElement('input');
+   input.type='file';
+   input.accept='image/*';
+
+   button.onclick=()=>input.click();
+
+   input.onchange=()=>uploadCover(song,input);
+
+   tools.appendChild(button);
+   tools.appendChild(input);
+   card.appendChild(tools);
+  }
+
+  library.appendChild(card);
+ }
+}
+
+async function uploadCover(song,input){
+ const file=input.files?.[0];
+
+ if(!file)return;
+
+ if(!isAdmin){
+  status('Debes iniciar sesión como administrador.');
+  return;
+ }
+
+ if(!file.type.startsWith('image/')){
+  status('Selecciona una imagen válida.');
+  input.value='';
+  return;
+ }
+
+ if(file.size>10*1024*1024){
+  status('La imagen debe pesar menos de 10 MB.');
+  input.value='';
+  return;
+ }
+
+ const extensions={
+  'image/jpeg':'jpg',
+  'image/png':'png',
+  'image/webp':'webp',
+  'image/gif':'gif'
+ };
+
+ const extension=extensions[file.type];
+
+ if(!extension){
+  status('Formato no compatible. Usa JPG, PNG, WEBP o GIF.');
+  input.value='';
+  return;
+ }
+
+ status('Subiendo portada de '+song.name+'...');
+
+ const coverPath=song.path+'__cover_'+Date.now()+'.'+extension;
+
+ const {error}=await db.storage
+  .from(COVER_BUCKET)
+  .upload(coverPath,file,{
+   contentType:file.type,
+   upsert:false
+  });
+
+ input.value='';
+
+ if(error){
+  status('No se pudo subir la portada: '+error.message);
+  return;
+ }
+
+ status('¡Portada guardada correctamente!');
+ await loadSongs();
 }
 
 async function play(i){
  index=i;
  status('Preparando reproducción...');
- const {data,error}=await db.storage.from(BUCKET).createSignedUrl(songs[i].path,3600);
+
+ const {data,error}=await db.storage
+  .from(BUCKET)
+  .createSignedUrl(songs[i].path,3600);
 
  if(error){
   status('No se pudo reproducir: '+error.message);
@@ -190,6 +348,7 @@ async function play(i){
  audio.src=data.signedUrl;
  document.getElementById('songTitle').textContent=songs[i].name;
  document.getElementById('artist').textContent='Artista independiente';
+
  try{
   await audio.play();
  }catch(e){
@@ -222,13 +381,15 @@ async function checkUser(){
  const {data,error}=await db.auth.getUser();
  const user=data?.user;
 
- if(!error && user && user.id===ADMIN_ID){
-  document.getElementById('loginArea').style.display='none';
-  document.getElementById('adminArea').style.display='block';
- }else{
-  document.getElementById('loginArea').style.display='block';
-  document.getElementById('adminArea').style.display='none';
- }
+ isAdmin=!error && !!user && user.id===ADMIN_ID;
+
+ document.getElementById('loginArea').style.display=
+  isAdmin?'none':'block';
+
+ document.getElementById('adminArea').style.display=
+  isAdmin?'block':'none';
+
+ if(songs.length)renderSongs();
 }
 
 async function login(){
@@ -241,6 +402,7 @@ async function login(){
  }
 
  status('Iniciando sesión...');
+
  const {data,error}=await db.auth.signInWithPassword({email,password});
 
  if(error){
@@ -297,11 +459,14 @@ document.getElementById('files').addEventListener('change',async e=>{
 
 function show(section){
  document.getElementById('sectionTitle').textContent=
- section==='Inicio'?'Nuevos descubrimientos':section;
+  section==='Inicio'?'Nuevos descubrimientos':section;
+
  document.getElementById('library').scrollIntoView({behavior:'smooth'});
 }
 
-db.auth.onAuthStateChange(()=>checkUser());
+db.auth.onAuthStateChange(()=>{
+ checkUser();
+});
 
 async function init(){
  await checkUser();
