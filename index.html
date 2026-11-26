@@ -765,8 +765,7 @@ async function renderArtists(){
   if(isAdmin){const e=document.createElement('button');e.textContent=' · Editar';e.onclick=()=>openArtistEditor(a);c.appendChild(e)}
   grid.appendChild(c);
  }
-}
-function openArtistByName(name){
+} function openArtistByName(name){
  const a=artists.find(x=>normalizeSearch(x.name)===normalizeSearch(name));
  if(a)showArtistProfile(a.id);else alert('Este artista todavía no tiene un perfil creado en MONTANA MUSIC.');
 }
