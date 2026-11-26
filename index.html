@@ -74,6 +74,14 @@ h1 span{color:#e32636}
 .profileHero p{color:#aaa;font-size:13px;line-height:1.6;white-space:pre-wrap}
 .backButton{background:#292929;border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:12px}
 .empty{color:#aaa;font-size:13px;padding:20px 0}
+.albumCard{background:#141414;border:1px solid #292929;border-radius:13px;padding:15px;margin-bottom:13px}
+.albumCard h3{font-size:16px;margin-bottom:5px;overflow-wrap:anywhere}
+.albumCard .albumMeta{color:#999;font-size:11px;margin-bottom:12px}
+.albumTrack{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #292929}
+.albumTrackInfo{flex:1;min-width:0}
+.albumTrackInfo strong{display:block;font-size:12px;overflow-wrap:anywhere}
+.albumTrackInfo small{display:block;color:#999;font-size:10px;margin-top:4px}
+.albumTrack button{background:#e32636;width:34px;height:34px;border-radius:50%;flex:0 0 34px}
 #fullPlayer{display:none;position:fixed;inset:0;z-index:50;background:linear-gradient(160deg,#26090d,#111 55%,#080808);padding:25px 7% 35px;overflow-y:auto}
 .fullTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:28px}
 .fullTop button{background:#292929;padding:11px 15px;border-radius:9px}
@@ -96,8 +104,6 @@ h1 span{color:#e32636}
 .danger{background:#8f202b!important}
 .authGrid{display:grid;grid-template-columns:1fr;gap:12px}
 .playlistItem{padding:13px;background:#141414;border:1px solid #333;border-radius:10px;margin:10px 0}
-
-/* BUSCADOR AVANZADO */
 .searchBox{margin-top:22px;background:#141414;border:1px solid #333;border-radius:14px;padding:15px}
 .searchInputWrap{display:flex;align-items:center;gap:10px;background:#090909;border:1px solid #383838;border-radius:10px;padding:0 13px}
 .searchIcon{font-size:20px;color:#ff5965}
@@ -168,7 +174,15 @@ h1 span{color:#e32636}
 <div id="launchesView" style="display:none"><section class="section"><div class="heading"><h2>♫ Lanzamientos</h2><small id="launchTotal"></small></div><p style="color:#aaa;font-size:13px;margin:-8px 0 18px">Música que ya ha sido estrenada.</p><div class="grid" id="launchLibrary"></div></section></div>
 <div id="unreleasedView" style="display:none"><section class="section"><div class="heading"><h2>✦ Inéditas</h2><small id="unreleasedTotal"></small></div><p style="color:#aaa;font-size:13px;margin:-8px 0 18px">Música disponible antes de su lanzamiento oficial.</p><div class="grid" id="unreleasedLibrary"></div></section></div>
 <div id="artistsView" style="display:none"><section class="section"><div class="heading"><h2>Artistas</h2><small id="artistTotal"></small></div><div class="grid" id="artistGrid"></div></section></div>
-<div id="artistProfile" style="display:none"><button class="backButton" onclick="showArtists()">← Volver a artistas</button><section class="profileHero"><div class="profilePhoto" id="profilePhoto">♫</div><h2 id="profileName"></h2><p id="profileBio"></p></section><section class="section"><div class="heading"><h2>Canciones</h2></div><div class="grid" id="artistSongs"></div></section></div>
+
+<div id="artistProfile" style="display:none">
+<button class="backButton" onclick="showArtists()">← Volver a artistas</button>
+<section class="profileHero"><div class="profilePhoto" id="profilePhoto">♫</div><h2 id="profileName"></h2><p id="profileBio"></p></section>
+<section class="section"><div class="heading"><h2>Agregadas recientemente</h2><small>Lo más nuevo primero</small></div><div class="grid" id="artistSongs"></div></section>
+<section class="section"><div class="heading"><h2>Álbumes</h2><small id="artistAlbumCount"></small></div><div id="artistAlbums"></div></section>
+<section class="section"><div class="heading"><h2>Sencillos</h2><small id="artistSingleCount"></small></div><div class="grid" id="artistSingles"></div></section>
+<section class="section"><div class="heading"><h2>Discografía completa</h2><small id="artistDiscographyCount"></small></div><div class="grid" id="artistDiscography"></div></section>
+</div>
 
 <div id="myMusicView" style="display:none">
 <section class="section"><div class="heading"><h2>♡ Mi música</h2><small id="userStatus">No has iniciado sesión</small></div>
@@ -250,7 +264,6 @@ function showLaunches(){currentView='launches';hideMainViews();launchesView.styl
 function showUnreleased(){currentView='unreleased';hideMainViews();unreleasedView.style.display='block';setActiveNav('navUnreleased');renderSongs();window.scrollTo({top:0,behavior:'smooth'})}
 function showArtists(){currentView='artists';hideMainViews();artistsView.style.display='block';setActiveNav('navArtists');renderArtists();window.scrollTo({top:0,behavior:'smooth'})}
 function showMyMusic(){currentView='myMusic';hideMainViews();myMusicView.style.display='block';setActiveNav('navMyMusic');if(currentUser)loadPersonalData();window.scrollTo({top:0,behavior:'smooth'})}
-
 function setSearchFilter(filter,button){
  searchFilter=filter;
  document.querySelectorAll('.searchFilters button').forEach(b=>b.classList.toggle('active',b===button));
@@ -344,15 +357,94 @@ async function runAdvancedSearch(){
  }
 }
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+/* PERFIL DE ARTISTA Y DISCOGRAFÍA */
+function songBelongsToArtist(song,artistName){
+ return artistNames(songArtist(song)).some(n=>normalizeSearch(n)===normalizeSearch(artistName));
+}
+function songAddedTime(song){
+ const info=getInfo(song);
+ const value=song.created_at||info.uploaded_at||info.updated_at||info.release_date;
+ const time=value?new Date(value).getTime():0;
+ return Number.isFinite(time)?time:0;
+}
+function newestFirst(list){
+ return [...list].sort((a,b)=>songAddedTime(b)-songAddedTime(a));
+}
+async function renderArtistSongGrid(containerId,list,emptyMessage){
+ const grid=document.getElementById(containerId);grid.innerHTML='';
+ if(!list.length){grid.innerHTML='<p class="empty">'+emptyMessage+'</p>';return}
+ for(const song of list){
+  grid.appendChild(await createSongCard(song,songs.indexOf(song),false));
+ }
+}
+async function renderArtistAlbums(list){
+ const container=document.getElementById('artistAlbums');container.innerHTML='';
+ const groups=new Map();
+ list.forEach(song=>{
+  const album=(getInfo(song).album||'').trim();
+  if(!album)return;
+  const key=normalizeSearch(album);
+  if(!groups.has(key))groups.set(key,{name:album,songs:[]});
+  groups.get(key).songs.push(song);
+ });
+ const albums=[...groups.values()].sort((a,b)=>{
+  return Math.max(...b.songs.map(songAddedTime))-Math.max(...a.songs.map(songAddedTime));
+ });
+ artistAlbumCount.textContent=albums.length+' álbumes';
+ if(!albums.length){
+  container.innerHTML='<p class="empty">Todavía no hay álbumes registrados para este artista.</p>';
+  return;
+ }
+ for(const album of albums){
+  album.songs=newestFirst(album.songs);
+  const box=document.createElement('div');box.className='albumCard';
+  const title=document.createElement('h3');title.textContent='▰ '+album.name;
+  const meta=document.createElement('p');meta.className='albumMeta';
+  meta.textContent=album.songs.length+' canciones · '+(album.songs.length===1?'1 pista':'Discografía del álbum');
+  box.append(title,meta);
+  album.songs.forEach((song,position)=>{
+   const row=document.createElement('div');row.className='albumTrack';
+   const number=document.createElement('span');number.style.cssText='color:#888;font-size:11px;width:18px';
+   number.textContent=String(position+1);
+   const info=document.createElement('div');info.className='albumTrackInfo';
+   const name=document.createElement('strong');name.textContent=songTitle(song);
+   const artistsLine=document.createElement('small');artistsLine.textContent=songArtist(song);
+   info.append(name,artistsLine);
+   const playButton=document.createElement('button');playButton.textContent='▶';
+   playButton.title='Reproducir '+songTitle(song);
+   playButton.onclick=()=>play(songs.indexOf(song));
+   row.append(number,info,playButton);box.appendChild(row);
+  });
+  container.appendChild(box);
+ }
+}
 async function showArtistProfile(id){
- const a=artists.find(x=>x.id===id);if(!a)return;currentArtist=a;currentView='artistProfile';hideMainViews();artistProfile.style.display='block';setActiveNav('navArtists');
- profileName.textContent=a.name;profileBio.textContent=a.biography||'Artista de MONTANA MUSIC';profilePhoto.innerHTML='♫';
- if(a.image_path){const {data}=await db.storage.from(COVER_BUCKET).createSignedUrl(a.image_path,3600);if(data?.signedUrl){const img=document.createElement('img');img.src=data.signedUrl;img.alt='Fotografía de '+a.name;profilePhoto.appendChild(img)}}
- artistSongs.innerHTML='';const matching=songs.filter(s=>artistNames(songArtist(s)).some(n=>n.toLowerCase()===a.name.toLowerCase()));
- if(!matching.length)artistSongs.innerHTML='<p class="empty">Todavía no hay canciones asociadas a este artista.</p>';
- else for(const s of matching)artistSongs.appendChild(await createSongCard(s,songs.indexOf(s),false));
+ const a=artists.find(x=>String(x.id)===String(id));if(!a)return;
+ currentArtist=a;currentView='artistProfile';hideMainViews();
+ artistProfile.style.display='block';setActiveNav('navArtists');
+ profileName.textContent=a.name;
+ profileBio.textContent=a.biography||'Artista de MONTANA MUSIC';
+ profilePhoto.innerHTML='♫';
+ if(a.image_path){
+  const {data}=await db.storage.from(COVER_BUCKET).createSignedUrl(a.image_path,3600);
+  if(data?.signedUrl){
+   const img=document.createElement('img');img.src=data.signedUrl;
+   img.alt='Fotografía de '+a.name;profilePhoto.appendChild(img);
+  }
+ }
+ const matching=newestFirst(songs.filter(s=>songBelongsToArtist(s,a.name)));
+ const recent=matching.slice(0,5);
+ const singles=matching.filter(s=>!(getInfo(s).album||'').trim());
+ await renderArtistSongGrid('artistSongs',recent,'Todavía no hay canciones asociadas a este artista.');
+ await renderArtistAlbums(matching);
+ artistSingleCount.textContent=singles.length+' sencillos';
+ await renderArtistSongGrid('artistSingles',singles,'Este artista todavía no tiene sencillos registrados. Las canciones sin álbum aparecerán aquí.');
+ artistDiscographyCount.textContent=matching.length+' canciones';
+ await renderArtistSongGrid('artistDiscography',matching,'Todavía no hay canciones en la discografía de este artista.');
  window.scrollTo({top:0,behavior:'smooth'});
 }
+
 async function loadSongs(){
  status('Buscando canciones...');
  const {data,error}=await db.storage.from(BUCKET).list('',{limit:1000,sortBy:{column:'created_at',order:'desc'}});
@@ -366,11 +458,14 @@ async function loadSongs(){
  if(me)status('Canciones cargadas. No se pudo leer su información: '+me.message);else status(songs.length?'Biblioteca actualizada.':'Todavía no hay canciones.');
  if(currentUser)await loadFavorites();
  if(currentView==='search')await runAdvancedSearch();
+ if(currentView==='artistProfile'&&currentArtist)await showArtistProfile(currentArtist.id);
 }
 async function loadArtists(){
  const {data,error}=await db.from(ARTIST_TABLE).select('*').order('name');
  if(error){status('No se pudieron cargar los artistas: '+error.message);return}
- artists=data||[];await renderArtists();if(currentView==='search')await runAdvancedSearch();
+ artists=data||[];await renderArtists();
+ if(currentView==='search')await runAdvancedSearch();
+ if(currentView==='artistProfile'&&currentArtist)await showArtistProfile(currentArtist.id);
 }
 async function createSongCard(song,i,adminTools=true){
  const info=getInfo(song),card=document.createElement('div');card.className='card';
@@ -424,7 +519,7 @@ async function renderArtists(){
  }
 }
 function openArtistByName(name){
- const a=artists.find(x=>x.name.toLowerCase()===name.toLowerCase());
+ const a=artists.find(x=>normalizeSearch(x.name)===normalizeSearch(name));
  if(a)showArtistProfile(a.id);else alert('Este artista todavía no tiene un perfil creado en MONTANA MUSIC.');
 }
 function openSongEditor(song){
