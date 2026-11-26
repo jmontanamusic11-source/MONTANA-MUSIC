@@ -137,7 +137,7 @@ h1 span{color:#e32636}
 .searchResultPlaylist p{font-size:12px;color:#aaa;margin-top:6px}
 .searchEmpty{color:#aaa;font-size:13px;padding:22px 4px}
 
-/* ARTISTA PRINCIPAL, LETRAS Y DISPOSITIVOS */
+/* ARTISTA PRINCIPAL Y LETRAS */
 .nowArtistRow{
  max-width:440px;margin:18px auto 0;padding:12px;
  display:flex;align-items:center;gap:12px;
@@ -155,14 +155,94 @@ h1 span{color:#e32636}
 .nowArtistText button{background:none;color:#ff5965;font-size:13px;text-align:left}
 .nowArtistText p{font-size:10px;color:#999;margin-top:4px}
 .nowArtistOpen{background:#292929;color:#fff;padding:9px 10px;border-radius:8px;font-size:11px;white-space:nowrap}
-.devicePanel,.lyricsPanel{max-width:560px;margin:18px auto 0}
-.devicePanel p,.lyricsPanel p{font-size:12px;color:#aaa;line-height:1.5}
-.devicePanel select{
- width:100%;margin-top:12px;padding:12px;background:#090909;
- border:1px solid #444;border-radius:8px;color:white;font-size:13px
+
+/* PANEL DE DISPOSITIVOS ESTILO SPOTIFY */
+.deviceConnectBar{
+ max-width:440px;margin:20px auto 0;
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding:12px 14px;background:#141414;border:1px solid #333;
+ border-radius:12px
 }
-.devicePanel button{margin-top:10px;background:#292929;padding:9px 12px;border-radius:8px;font-size:11px}
-.devicePanel .deviceHint{display:block;margin-top:9px;color:#888;font-size:10px;line-height:1.5}
+.deviceConnectInfo{display:flex;align-items:center;gap:10px;min-width:0}
+.deviceConnectIcon{
+ width:38px;height:38px;flex:0 0 38px;border-radius:50%;
+ display:grid;place-items:center;background:#252525;color:#aaa;
+ font-size:19px;transition:background .2s,color .2s
+}
+.deviceConnectIcon.connected{background:#123d2b;color:#1ed760}
+.deviceConnectText{min-width:0}
+.deviceConnectText small{display:block;color:#999;font-size:9px;letter-spacing:1px;margin-bottom:4px}
+.deviceConnectText strong{
+ display:block;font-size:12px;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis
+}
+.deviceConnectButton{
+ width:40px;height:40px;flex:0 0 40px;border-radius:50%;
+ background:#292929;color:#fff;font-size:19px;
+ display:grid;place-items:center;transition:background .2s,transform .2s
+}
+.deviceConnectButton:active{transform:scale(.94)}
+.deviceConnectButton.connected{color:#1ed760}
+.deviceSheetBackdrop{
+ display:none;position:fixed;inset:0;z-index:80;
+ background:#000b;backdrop-filter:blur(3px)
+}
+.deviceSheetBackdrop.open{display:block}
+.deviceSheet{
+ position:fixed;z-index:81;left:0;right:0;bottom:0;
+ max-height:78vh;overflow-y:auto;
+ background:#171717;border:1px solid #383838;
+ border-radius:22px 22px 0 0;padding:12px 20px 28px;
+ transform:translateY(110%);transition:transform .28s ease;
+ box-shadow:0 -15px 45px #0009
+}
+.deviceSheet.open{transform:translateY(0)}
+.deviceSheetHandle{width:38px;height:4px;border-radius:5px;background:#666;margin:0 auto 19px}
+.deviceSheetHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.deviceSheetHeader h3{font-size:19px}
+.deviceSheetHeader button{
+ width:34px;height:34px;border-radius:50%;background:#303030;
+ color:#ddd;font-size:19px
+}
+.deviceSheetSubtitle{color:#aaa;font-size:12px;line-height:1.5;margin-bottom:17px}
+.deviceCurrent{
+ background:#123d2b;border:1px solid #1b7044;border-radius:11px;
+ padding:13px;margin-bottom:16px;display:flex;align-items:center;gap:11px
+}
+.deviceCurrentIcon{font-size:22px;color:#1ed760}
+.deviceCurrentText{flex:1;min-width:0}
+.deviceCurrentText small{display:block;color:#a7d8ba;font-size:9px;letter-spacing:1px;margin-bottom:4px}
+.deviceCurrentText strong{display:block;font-size:13px;overflow-wrap:anywhere}
+.deviceListTitle{font-size:11px;color:#aaa;letter-spacing:1px;margin:17px 0 9px}
+.deviceList{display:grid;gap:7px}
+.deviceOption{
+ width:100%;display:flex;align-items:center;gap:12px;
+ padding:13px;background:#242424;border:1px solid #393939;
+ border-radius:10px;text-align:left;color:#fff
+}
+.deviceOption:active{background:#303030}
+.deviceOption.selected{border-color:#1ed760;background:#1a3025}
+.deviceOptionIcon{
+ width:34px;height:34px;border-radius:50%;background:#353535;
+ display:grid;place-items:center;font-size:16px;flex:0 0 34px
+}
+.deviceOption.selected .deviceOptionIcon{color:#1ed760;background:#244b35}
+.deviceOptionText{flex:1;min-width:0}
+.deviceOptionText strong{font-size:12px;display:block;overflow-wrap:anywhere}
+.deviceOptionText small{font-size:10px;color:#999;display:block;margin-top:4px}
+.deviceOptionCheck{color:#1ed760;font-size:17px}
+.deviceSheetActions{display:flex;gap:9px;margin-top:16px}
+.deviceSheetActions button{
+ flex:1;padding:12px;border-radius:9px;background:#303030;
+ font-size:11px;color:#eee
+}
+.deviceSheetActions .devicePrimary{
+ background:#1ed760;color:#07180e;font-weight:bold
+}
+.deviceSheetHint{display:block;color:#888;font-size:10px;line-height:1.5;margin-top:14px}
+#audioOutputSelect{display:none!important}
+.lyricsPanel{max-width:560px;margin:18px auto 0}
+.lyricsPanel p{font-size:12px;color:#aaa;line-height:1.5}
 .lyricsPanel .heading{margin-bottom:12px}
 .lyricsPanel .heading h3{margin:0}
 .lyricsPanel .heading small{color:#ff5965;font-size:10px}
@@ -183,6 +263,8 @@ h1 span{color:#e32636}
  main{padding-top:40px}.hero{padding:55px}
  #fullPlayer{padding-top:30px}
  .authGrid{grid-template-columns:1fr 1fr}
+ .deviceSheet{left:50%;right:auto;width:min(100%,520px);transform:translate(-50%,110%);border-radius:22px 22px 0 0}
+ .deviceSheet.open{transform:translate(-50%,0)}
 }
 @media(max-width:420px){
  #fullPlayer{padding-left:18px;padding-right:18px}
@@ -192,6 +274,8 @@ h1 span{color:#e32636}
  .lyricLine.active{font-size:20px}
  .nowArtistRow{gap:8px;padding:10px}
  .nowArtistOpen{font-size:10px;padding:8px}
+ .deviceConnectBar{padding:10px}
+ .deviceSheet{padding-left:16px;padding-right:16px}
 }
 </style>
 </head>
@@ -320,16 +404,49 @@ h1 span{color:#e32636}
    <button class="bigPlay" id="fullPlayBtn" onclick="toggle()" aria-label="Reproducir o pausar">▶</button>
    <button onclick="next()" aria-label="Siguiente canción">▶|</button>
   </div>
-  <section class="panel devicePanel">
-   <div class="heading"><h3>Dispositivo de reproducción</h3><small>♫ AUDIO</small></div>
-   <p id="deviceStatus">Salida administrada por tu dispositivo.</p>
-   <select id="audioOutputSelect" onchange="selectAudioOutput(this.value)" aria-label="Seleccionar salida de audio">
-    <option value="">Salida predeterminada</option>
-   </select>
-   <button type="button" onclick="chooseAudioOutput()">Elegir dispositivo de audio</button>
-   <button type="button" onclick="refreshAudioOutputs()">↻ Actualizar dispositivos</button>
-   <small class="deviceHint" id="deviceHint">La detección y selección de Bluetooth depende del navegador y del dispositivo.</small>
+
+  <!-- Acceso compacto al panel de dispositivos, inspirado en Spotify -->
+  <div class="deviceConnectBar">
+   <div class="deviceConnectInfo">
+    <div class="deviceConnectIcon" id="deviceConnectIcon">⌁</div>
+    <div class="deviceConnectText">
+     <small>ESCUCHANDO EN</small>
+     <strong id="deviceConnectName">Este dispositivo</strong>
+    </div>
+   </div>
+   <button class="deviceConnectButton" id="deviceConnectButton" type="button" onclick="openDeviceSheet()" aria-label="Conectar a un dispositivo" title="Conectar a un dispositivo">⌁</button>
+  </div>
+
+  <!-- Panel inferior de selección de dispositivos -->
+  <div class="deviceSheetBackdrop" id="deviceSheetBackdrop" onclick="closeDeviceSheet()"></div>
+  <section class="deviceSheet" id="deviceSheet" aria-label="Dispositivos disponibles" aria-hidden="true">
+   <div class="deviceSheetHandle"></div>
+   <div class="deviceSheetHeader">
+    <h3>Conectar a un dispositivo</h3>
+    <button type="button" onclick="closeDeviceSheet()" aria-label="Cerrar">×</button>
+   </div>
+   <p class="deviceSheetSubtitle">Elige dónde quieres escuchar MONTANA MUSIC.</p>
+   <div class="deviceCurrent">
+    <div class="deviceCurrentIcon">♫</div>
+    <div class="deviceCurrentText">
+     <small>REPRODUCIENDO EN</small>
+     <strong id="deviceCurrentName">Este dispositivo</strong>
+    </div>
+   </div>
+   <div class="deviceListTitle">DISPOSITIVOS DISPONIBLES</div>
+   <div class="deviceList" id="deviceList">
+    <p style="color:#999;font-size:12px;padding:12px 2px">Buscando dispositivos de audio...</p>
+   </div>
+   <div class="deviceSheetActions">
+    <button class="devicePrimary" type="button" onclick="chooseAudioOutput()">＋ Conectar dispositivo</button>
+    <button type="button" onclick="refreshAudioOutputs()">↻ Actualizar</button>
+   </div>
+   <small class="deviceSheetHint" id="deviceHint">La disponibilidad de Bluetooth y el cambio de salida dependen del navegador y del dispositivo. Si no aparece tu bocina o audífonos, conéctalos primero desde los ajustes Bluetooth de tu equipo.</small>
   </section>
+  <select id="audioOutputSelect" aria-label="Salida de audio" tabindex="-1">
+   <option value="">Salida predeterminada</option>
+  </select>
+
   <section class="panel lyricsPanel">
    <div class="heading"><h3>♫ Letra</h3><small>SINCRONIZADA</small></div>
    <p id="lyricsStatus">Esta canción todavía no tiene letra sincronizada.</p>
@@ -355,7 +472,8 @@ let index=-1,isAdmin=false,editingSong=null,editingArtist=null,editorMode='song'
 let favorites=new Set(),playlists=[],activePlaylist=null;
 let searchFilter='todo',searchQuery='';
 let parsedLyrics=[],activeLyricIndex=-1,nowPlayingArtistId=null;
-let currentOutputName='Salida predeterminada';
+let currentOutputName='Este dispositivo',currentOutputId='',audioOutputDevices=[];
+let deviceSheetOpen=false;
 
 function status(m){statusBox.textContent=m}
 function getInfo(s){return metadata[s.path]||{}}
@@ -676,7 +794,7 @@ function openArtistEditor(a=null){
 function closeEditor(){editor.style.display='none';editingSong=null;editingArtist=null}
 async function saveEditor(){if(!isAdmin)return;if(editorMode==='song')return saveSongMetadata();if(editorMode==='artist')return saveArtist()}
 
-/* FUNCIÓN CORREGIDA: GUARDA LA LETRA Y ACTUALIZA EL REPRODUCTOR */
+/* GUARDA LA LETRA Y ACTUALIZA EL REPRODUCTOR */
 async function saveSongMetadata(){
  if(!editingSong)return;
 
@@ -849,109 +967,241 @@ function openNowPlayingArtist(){
  if(nowPlayingArtistId)showArtistProfile(nowPlayingArtistId);
 }
 
-/* SELECTOR DE SALIDA DE AUDIO */
+/* PANEL DE DISPOSITIVOS ESTILO SPOTIFY */
+
+function deviceLooksBluetooth(name){
+ return /bluetooth|airpods|buds|jbl|bose|beats|sony|headset|headphone|auricular|aud[ií]fono|bocina|speaker|soundcore|anker|marshall|galaxy/i.test(name||'');
+}
+
+function updateDeviceUI(){
+ const icon=document.getElementById('deviceConnectIcon');
+ const button=document.getElementById('deviceConnectButton');
+ const name=document.getElementById('deviceConnectName');
+ const current=document.getElementById('deviceCurrentName');
+
+ const isSelected=!!currentOutputId;
+ const bluetooth=deviceLooksBluetooth(currentOutputName);
+ const label=currentOutputName||'Este dispositivo';
+
+ if(name)name.textContent=label;
+ if(current)current.textContent=label;
+
+ if(icon){
+  icon.classList.toggle('connected',isSelected);
+  icon.textContent=bluetooth?'ᛒ':'⌁';
+ }
+ if(button){
+  button.classList.toggle('connected',isSelected);
+  button.style.color=isSelected?'#1ed760':'#fff';
+  button.title=isSelected?'Cambiar dispositivo de audio':'Conectar a un dispositivo';
+ }
+
+ renderDeviceList();
+}
+
+function openDeviceSheet(){
+ const sheet=document.getElementById('deviceSheet');
+ const backdrop=document.getElementById('deviceSheetBackdrop');
+ if(!sheet||!backdrop)return;
+
+ deviceSheetOpen=true;
+ backdrop.classList.add('open');
+ sheet.classList.add('open');
+ sheet.setAttribute('aria-hidden','false');
+ refreshAudioOutputs();
+}
+
+function closeDeviceSheet(){
+ const sheet=document.getElementById('deviceSheet');
+ const backdrop=document.getElementById('deviceSheetBackdrop');
+ if(!sheet||!backdrop)return;
+
+ deviceSheetOpen=false;
+ sheet.classList.remove('open');
+ backdrop.classList.remove('open');
+ sheet.setAttribute('aria-hidden','true');
+}
+
+function renderDeviceList(){
+ const list=document.getElementById('deviceList');
+ if(!list)return;
+
+ list.innerHTML='';
+
+ const defaultItem=document.createElement('button');
+ defaultItem.type='button';
+ defaultItem.className='deviceOption'+(!currentOutputId?' selected':'');
+ defaultItem.innerHTML=
+  '<span class="deviceOptionIcon">📱</span>'+
+  '<span class="deviceOptionText"><strong>Este dispositivo</strong><small>Salida predeterminada</small></span>'+
+  (!currentOutputId?'<span class="deviceOptionCheck">✓</span>':'');
+ defaultItem.onclick=()=>selectAudioOutput('');
+ list.appendChild(defaultItem);
+
+ const outputs=audioOutputDevices.filter(d=>d.deviceId&&d.deviceId!=='default');
+
+ if(!outputs.length){
+  const empty=document.createElement('p');
+  empty.style.cssText='color:#999;font-size:11px;line-height:1.5;padding:12px 2px';
+  empty.textContent='No hay otras salidas visibles por ahora. Conecta tus audífonos o bocina Bluetooth y actualiza la lista.';
+  list.appendChild(empty);
+  return;
+ }
+
+ outputs.forEach((device,i)=>{
+  const selected=device.deviceId===currentOutputId;
+  const label=device.label||('Salida de audio '+(i+1));
+  const bluetooth=deviceLooksBluetooth(label);
+
+  const item=document.createElement('button');
+  item.type='button';
+  item.className='deviceOption'+(selected?' selected':'');
+  item.innerHTML=
+   '<span class="deviceOptionIcon">'+(bluetooth?'ᛒ':'♫')+'</span>'+
+   '<span class="deviceOptionText"><strong></strong><small></small></span>'+
+   (selected?'<span class="deviceOptionCheck">✓</span>':'');
+
+  item.querySelector('strong').textContent=label;
+  item.querySelector('small').textContent=bluetooth?'Dispositivo Bluetooth':'Salida de audio disponible';
+  item.onclick=()=>selectAudioOutput(device.deviceId);
+  list.appendChild(item);
+ });
+}
+
+/* CONSULTA LAS SALIDAS DE AUDIO DISPONIBLES */
 async function refreshAudioOutputs(){
  const select=document.getElementById('audioOutputSelect');
- const deviceStatus=document.getElementById('deviceStatus');
  const hint=document.getElementById('deviceHint');
- if(!select||!deviceStatus)return;
+ if(!select)return;
 
  if(!navigator.mediaDevices?.enumerateDevices){
-  select.innerHTML='<option value="">Salida predeterminada</option>';
-  select.disabled=true;
-  deviceStatus.textContent='Tu navegador no permite consultar las salidas de audio desde MONTANA MUSIC.';
-  hint.textContent='Selecciona Bluetooth o tus auriculares desde los ajustes de sonido del dispositivo.';
+  audioOutputDevices=[];
+  if(hint)hint.textContent='Tu navegador no permite consultar las salidas de audio. Conecta Bluetooth desde los ajustes de tu dispositivo.';
+  updateDeviceUI();
   return;
  }
 
  try{
   const devices=await navigator.mediaDevices.enumerateDevices();
-  const outputs=devices.filter(d=>d.kind==='audiooutput');
-  const previous=select.value;
+  audioOutputDevices=devices.filter(d=>d.kind==='audiooutput');
 
   select.innerHTML='';
   const defaultOption=document.createElement('option');
   defaultOption.value='';
-  defaultOption.textContent='Salida predeterminada';
+  defaultOption.textContent='Este dispositivo';
   select.appendChild(defaultOption);
 
-  outputs.forEach((device,i)=>{
+  audioOutputDevices.forEach((device,i)=>{
    const option=document.createElement('option');
    option.value=device.deviceId;
    option.textContent=device.label||('Salida de audio '+(i+1));
    select.appendChild(option);
   });
 
-  select.disabled=typeof audio.setSinkId!=='function';
-  if(previous&&outputs.some(d=>d.deviceId===previous))select.value=previous;
+  if(currentOutputId){
+   const selected=audioOutputDevices.find(d=>d.deviceId===currentOutputId);
+   if(selected){
+    currentOutputName=selected.label||currentOutputName||'Salida seleccionada';
+    select.value=currentOutputId;
+   }else{
+    /* El dispositivo dejó de estar disponible */
+    currentOutputId='';
+    currentOutputName='Este dispositivo';
+    try{
+     if(typeof audio.setSinkId==='function')await audio.setSinkId('');
+    }catch(e){}
+   }
+  }else{
+   currentOutputName='Este dispositivo';
+   select.value='';
+  }
 
   if(typeof audio.setSinkId!=='function'){
-   deviceStatus.textContent='Tu navegador no permite cambiar la salida desde MONTANA MUSIC.';
-   hint.textContent='Puedes elegir Bluetooth desde los ajustes de sonido de tu celular o computadora.';
+   if(hint)hint.textContent='Tu navegador puede mostrar dispositivos, pero no permite cambiar la salida desde la página. Usa los ajustes de sonido de tu equipo.';
+  }else if(!audioOutputDevices.length){
+   if(hint)hint.textContent='No se detectaron salidas adicionales. Conecta tus audífonos o bocina Bluetooth y vuelve a actualizar.';
   }else{
-   deviceStatus.textContent=outputs.length>1?'Elige una salida de audio disponible.':'Salida predeterminada del dispositivo.';
-   hint.textContent='Si conectas unos auriculares Bluetooth y no aparecen, intenta elegir el dispositivo o selecciónalos desde los ajustes del sistema.';
+   if(hint)hint.textContent='Selecciona una salida disponible. Algunos navegadores ocultan los nombres hasta que autorizas el acceso a los dispositivos.';
   }
+
+  updateDeviceUI();
  }catch(error){
-  deviceStatus.textContent='No fue posible consultar los dispositivos de audio.';
-  hint.textContent='El navegador puede requerir permisos o no admitir esta función.';
+  if(hint)hint.textContent='No fue posible consultar los dispositivos. Comprueba los permisos del navegador.';
+  updateDeviceUI();
  }
 }
 
-/* ABRE EL SELECTOR NATIVO CUANDO EL NAVEGADOR LO ADMITE */
+/* ABRE EL SELECTOR NATIVO DEL NAVEGADOR */
 async function chooseAudioOutput(){
- const deviceStatus=document.getElementById('deviceStatus');
+ const hint=document.getElementById('deviceHint');
 
  if(!navigator.mediaDevices?.selectAudioOutput){
-  deviceStatus.textContent='Tu navegador no ofrece un selector de salida de audio. Elige Bluetooth desde los ajustes del dispositivo.';
+  if(hint)hint.textContent='Tu navegador no ofrece el selector de dispositivos. Si no aparece tu Bluetooth, conéctalo desde los ajustes de sonido del teléfono o computadora.';
   await refreshAudioOutputs();
   return;
  }
 
  try{
   const device=await navigator.mediaDevices.selectAudioOutput();
+
   if(typeof audio.setSinkId!=='function'){
-   deviceStatus.textContent='El dispositivo fue seleccionado, pero tu navegador no permite dirigir el audio desde la página.';
+   if(hint)hint.textContent='El navegador permitió elegir un dispositivo, pero no permite dirigir el audio desde esta página.';
    return;
   }
 
   await audio.setSinkId(device.deviceId);
-  currentOutputName=device.label||'Salida seleccionada';
-  deviceStatus.textContent='Salida seleccionada: '+currentOutputName;
-  await refreshAudioOutputs();
 
-  const select=document.getElementById('audioOutputSelect');
-  if(select)select.value=device.deviceId;
+  currentOutputId=device.deviceId||'';
+  currentOutputName=device.label||'Dispositivo seleccionado';
+
+  await refreshAudioOutputs();
+  status('Dispositivo de audio seleccionado.');
  }catch(error){
   if(error.name==='NotAllowedError'){
-   deviceStatus.textContent='No se concedió permiso para seleccionar una salida de audio.';
+   if(hint)hint.textContent='No se concedió permiso para seleccionar una salida de audio.';
   }else if(error.name==='NotFoundError'){
-   deviceStatus.textContent='No se encontró ese dispositivo de audio.';
+   if(hint)hint.textContent='No se encontró el dispositivo. Comprueba que esté conectado.';
   }else{
-   deviceStatus.textContent='No fue posible abrir el selector de audio. Usa los ajustes de tu dispositivo.';
+   if(hint)hint.textContent='No fue posible abrir el selector. Comprueba los ajustes de Bluetooth de tu dispositivo.';
   }
  }
 }
 
+/* CAMBIA LA SALIDA DE AUDIO AL TOCAR UN DISPOSITIVO */
 async function selectAudioOutput(deviceId){
- const deviceStatus=document.getElementById('deviceStatus');
- const select=document.getElementById('audioOutputSelect');
+ const hint=document.getElementById('deviceHint');
 
  if(typeof audio.setSinkId!=='function'){
-  deviceStatus.textContent='No compatible: cambia la salida desde los ajustes de sonido de tu dispositivo.';
+  if(hint)hint.textContent='Tu navegador no permite cambiar la salida de audio desde MONTANA MUSIC. Usa los ajustes de sonido del dispositivo.';
   return;
  }
 
  try{
   await audio.setSinkId(deviceId||'');
-  const option=select.options[select.selectedIndex];
-  currentOutputName=deviceId?(option?.textContent||'Salida seleccionada'):'Salida predeterminada';
-  deviceStatus.textContent='Salida seleccionada: '+currentOutputName;
-  status('Salida de audio actualizada.');
+
+  currentOutputId=deviceId||'';
+
+  if(!deviceId){
+   currentOutputName='Este dispositivo';
+  }else{
+   const selected=audioOutputDevices.find(d=>d.deviceId===deviceId);
+   currentOutputName=selected?.label||'Dispositivo seleccionado';
+  }
+
+  await refreshAudioOutputs();
+  status(deviceId?'Salida de audio actualizada.':'Se está usando este dispositivo.');
+  closeDeviceSheet();
  }catch(error){
-  deviceStatus.textContent='No se pudo cambiar la salida de audio. Prueba desde los ajustes del dispositivo.';
+  if(hint)hint.textContent='No se pudo cambiar la salida. Comprueba que el dispositivo siga conectado y vuelve a intentarlo.';
   status('El navegador no permitió cambiar la salida de audio.');
  }
+}
+
+/* ACTUALIZACIÓN AUTOMÁTICA CUANDO CAMBIAN LOS DISPOSITIVOS */
+if(navigator.mediaDevices?.addEventListener){
+ navigator.mediaDevices.addEventListener('devicechange',()=>{
+  refreshAudioOutputs();
+ });
 }
 
 /* REPRODUCCIÓN */
@@ -1006,6 +1256,7 @@ function openFullPlayer(){
  if(index>=0)fullPlayer.style.display='block';
 }
 function closeFullPlayer(){
+ closeDeviceSheet();
  fullPlayer.style.display='none';
 }
 function formatTime(s){
@@ -1053,6 +1304,7 @@ audio.onpause=()=>{
  playBtn.textContent='▶';
  fullPlayBtn.textContent='▶';
 };
+
 /* CUENTAS: AUTENTICACIÓN GENERAL SEPARADA DE LOS PERMISOS ADMINISTRATIVOS */
 async function checkUser(){
  const {data,error}=await db.auth.getUser();
@@ -1357,6 +1609,7 @@ async function init(){
  await checkUser();
  await loadSongs();
  await loadArtists();
+ await refreshAudioOutputs();
 }
 
 init();
