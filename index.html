@@ -154,6 +154,7 @@ h1 span{color:#e32636}
 .nowArtistText strong{font-size:14px;display:block;overflow-wrap:anywhere}
 .nowArtistText button{background:none;color:#ff5965;font-size:13px;text-align:left}
 .nowArtistText p{font-size:10px;color:#999;margin-top:4px}
+.nowArtistOpen{background:#292929;color:#fff;padding:9px 10px;border-radius:8px;font-size:11px;white-space:nowrap}
 .devicePanel,.lyricsPanel{max-width:560px;margin:18px auto 0}
 .devicePanel p,.lyricsPanel p{font-size:12px;color:#aaa;line-height:1.5}
 .devicePanel select{
@@ -189,6 +190,8 @@ h1 span{color:#e32636}
  .fullCover{width:min(78vw,320px)}
  .lyricLine{font-size:17px}
  .lyricLine.active{font-size:20px}
+ .nowArtistRow{gap:8px;padding:10px}
+ .nowArtistOpen{font-size:10px;padding:8px}
 }
 </style>
 </head>
@@ -306,6 +309,7 @@ h1 span{color:#e32636}
     <strong id="nowArtistName">Artista</strong>
     <p id="nowArtistExtra"></p>
    </div>
+   <button class="nowArtistOpen" id="nowArtistOpen" type="button" onclick="openNowPlayingArtist()" style="display:none">Ver perfil ↗</button>
   </div>
   <div class="progressArea">
    <input id="progress" type="range" min="0" max="100" value="0" step="0.1" oninput="seekTo(this.value)" aria-label="Progreso de la canción">
@@ -322,6 +326,7 @@ h1 span{color:#e32636}
    <select id="audioOutputSelect" onchange="selectAudioOutput(this.value)" aria-label="Seleccionar salida de audio">
     <option value="">Salida predeterminada</option>
    </select>
+   <button type="button" onclick="chooseAudioOutput()">Elegir dispositivo de audio</button>
    <button type="button" onclick="refreshAudioOutputs()">↻ Actualizar dispositivos</button>
    <small class="deviceHint" id="deviceHint">La detección y selección de Bluetooth depende del navegador y del dispositivo.</small>
   </section>
@@ -349,7 +354,7 @@ let songs=[],coverFiles=[],metadata={},artists=[],currentUser=null;
 let index=-1,isAdmin=false,editingSong=null,editingArtist=null,editorMode='song',currentArtist=null,currentView='home';
 let favorites=new Set(),playlists=[],activePlaylist=null;
 let searchFilter='todo',searchQuery='';
-let parsedLyrics=[],activeLyricIndex=-1;
+let parsedLyrics=[],activeLyricIndex=-1,nowPlayingArtistId=null;
 let currentOutputName='Salida predeterminada';
 
 function status(m){statusBox.textContent=m}
@@ -588,6 +593,7 @@ async function loadArtists(){
  const {data,error}=await db.from(ARTIST_TABLE).select('*').order('name');
  if(error){status('No se pudieron cargar los artistas: '+error.message);return}
  artists=data||[];await renderArtists();
+ if(index>=0&&songs[index])await renderNowPlayingArtist(songs[index]);
  if(currentView==='search')await runAdvancedSearch();
  if(currentView==='artistProfile'&&currentArtist)await showArtistProfile(currentArtist.id);
 }
@@ -669,12 +675,21 @@ function openArtistEditor(a=null){
 }
 function closeEditor(){editor.style.display='none';editingSong=null;editingArtist=null}
 async function saveEditor(){if(!isAdmin)return;if(editorMode==='song')return saveSongMetadata();if(editorMode==='artist')return saveArtist()}
+
+/* FUNCIÓN CORREGIDA: GUARDA LA LETRA Y ACTUALIZA EL REPRODUCTOR */
 async function saveSongMetadata(){
  if(!editingSong)return;
+
+ const savedPath=editingSong.path;
  const title=editTitle.value.trim();
- if(!title){alert('Escribe el nombre de la canción.');return}
+
+ if(!title){
+  alert('Escribe el nombre de la canción.');
+  return;
+ }
+
  const r={
-  storage_path:editingSong.path,
+  storage_path:savedPath,
   title,
   artist:editArtist.value.trim()||'Artista independiente',
   album:editAlbum.value.trim(),
@@ -685,14 +700,36 @@ async function saveSongMetadata(){
   uploaded_at:editingSong.created_at||new Date().toISOString(),
   updated_at:new Date().toISOString()
  };
+
  status('Guardando información...');
  const {error}=await db.from(META_TABLE).upsert(r,{onConflict:'storage_path'});
- if(error){status('No se pudo guardar: '+error.message);return}
- metadata[editingSong.path]=r;closeEditor();await renderSongs();await loadArtists();
+
+ if(error){
+  status('No se pudo guardar: '+error.message);
+  return;
+ }
+
+ metadata[savedPath]=r;
+ closeEditor();
+
+ await renderSongs();
+ await loadArtists();
+
  if(currentView==='search')await runAdvancedSearch();
- if(index>=0&&songs[index]?.path===editingSong?.path)renderLyrics(songs[index]);
+
+ const playingIndex=songs.findIndex(s=>s.path===savedPath);
+ if(playingIndex>=0&&index===playingIndex){
+  fullTitle.textContent=r.title;
+  fullArtist.textContent=r.artist;
+  songTitleEl.textContent=r.title;
+  artistEl.textContent=r.artist;
+  renderLyrics(songs[index]);
+  await renderNowPlayingArtist(songs[index]);
+ }
+
  status('¡Información guardada!');
 }
+
 async function saveArtist(){
  const name=artistNameInput.value.trim(),biography=artistBioInput.value.trim(),file=artistImageInput.files[0];
  if(!name){alert('Escribe el nombre del artista.');return}
@@ -780,22 +817,26 @@ async function renderNowPlayingArtist(song){
  const photo=document.getElementById('nowArtistPhoto');
  const nameEl=document.getElementById('nowArtistName');
  const extra=document.getElementById('nowArtistExtra');
+ const openButton=document.getElementById('nowArtistOpen');
  const names=artistNames(songArtist(song));
  const primary=names[0]||'Artista independiente';
  const collaborators=names.slice(1);
  const artistRecord=artists.find(a=>normalizeSearch(a.name)===normalizeSearch(primary));
- photo.textContent='♫';photo.innerHTML='♫';
+
+ nowPlayingArtistId=artistRecord?.id||null;
+ photo.innerHTML='♫';
  nameEl.textContent=primary;
- nameEl.onclick=null;
- nameEl.style.cursor='default';
  extra.textContent=collaborators.length?'Con '+collaborators.join(', '):'';
+ openButton.style.display=artistRecord?'inline-block':'none';
+
  if(!artistRecord)return;
- nameEl.style.cursor='pointer';
- nameEl.onclick=()=>showArtistProfile(artistRecord.id);
+
  if(artistRecord.image_path){
   const songPath=song.path;
+  const artistId=artistRecord.id;
   const {data,error}=await db.storage.from(COVER_BUCKET).createSignedUrl(artistRecord.image_path,3600);
-  if(!error&&data?.signedUrl&&songs[index]?.path===songPath){
+
+  if(!error&&data?.signedUrl&&songs[index]?.path===songPath&&nowPlayingArtistId===artistId){
    const img=document.createElement('img');
    img.src=data.signedUrl;
    img.alt='Foto de '+artistRecord.name;
@@ -804,13 +845,17 @@ async function renderNowPlayingArtist(song){
   }
  }
 }
+function openNowPlayingArtist(){
+ if(nowPlayingArtistId)showArtistProfile(nowPlayingArtistId);
+}
 
-/* SELECTOR DE SALIDA DE AUDIO: DEPENDE DEL SOPORTE DEL NAVEGADOR */
+/* SELECTOR DE SALIDA DE AUDIO */
 async function refreshAudioOutputs(){
  const select=document.getElementById('audioOutputSelect');
  const deviceStatus=document.getElementById('deviceStatus');
  const hint=document.getElementById('deviceHint');
  if(!select||!deviceStatus)return;
+
  if(!navigator.mediaDevices?.enumerateDevices){
   select.innerHTML='<option value="">Salida predeterminada</option>';
   select.disabled=true;
@@ -818,42 +863,85 @@ async function refreshAudioOutputs(){
   hint.textContent='Selecciona Bluetooth o tus auriculares desde los ajustes de sonido del dispositivo.';
   return;
  }
+
  try{
   const devices=await navigator.mediaDevices.enumerateDevices();
   const outputs=devices.filter(d=>d.kind==='audiooutput');
   const previous=select.value;
+
   select.innerHTML='';
   const defaultOption=document.createElement('option');
   defaultOption.value='';
   defaultOption.textContent='Salida predeterminada';
   select.appendChild(defaultOption);
+
   outputs.forEach((device,i)=>{
    const option=document.createElement('option');
    option.value=device.deviceId;
    option.textContent=device.label||('Salida de audio '+(i+1));
    select.appendChild(option);
   });
+
   select.disabled=typeof audio.setSinkId!=='function';
   if(previous&&outputs.some(d=>d.deviceId===previous))select.value=previous;
+
   if(typeof audio.setSinkId!=='function'){
    deviceStatus.textContent='Tu navegador no permite cambiar la salida desde MONTANA MUSIC.';
    hint.textContent='Puedes elegir Bluetooth desde los ajustes de sonido de tu celular o computadora.';
   }else{
    deviceStatus.textContent=outputs.length>1?'Elige una salida de audio disponible.':'Salida predeterminada del dispositivo.';
-   hint.textContent='Si conectas unos auriculares Bluetooth y no aparecen, actualiza la lista o selecciónalos desde los ajustes de tu dispositivo.';
+   hint.textContent='Si conectas unos auriculares Bluetooth y no aparecen, intenta elegir el dispositivo o selecciónalos desde los ajustes del sistema.';
   }
  }catch(error){
   deviceStatus.textContent='No fue posible consultar los dispositivos de audio.';
   hint.textContent='El navegador puede requerir permisos o no admitir esta función.';
  }
 }
+
+/* ABRE EL SELECTOR NATIVO CUANDO EL NAVEGADOR LO ADMITE */
+async function chooseAudioOutput(){
+ const deviceStatus=document.getElementById('deviceStatus');
+
+ if(!navigator.mediaDevices?.selectAudioOutput){
+  deviceStatus.textContent='Tu navegador no ofrece un selector de salida de audio. Elige Bluetooth desde los ajustes del dispositivo.';
+  await refreshAudioOutputs();
+  return;
+ }
+
+ try{
+  const device=await navigator.mediaDevices.selectAudioOutput();
+  if(typeof audio.setSinkId!=='function'){
+   deviceStatus.textContent='El dispositivo fue seleccionado, pero tu navegador no permite dirigir el audio desde la página.';
+   return;
+  }
+
+  await audio.setSinkId(device.deviceId);
+  currentOutputName=device.label||'Salida seleccionada';
+  deviceStatus.textContent='Salida seleccionada: '+currentOutputName;
+  await refreshAudioOutputs();
+
+  const select=document.getElementById('audioOutputSelect');
+  if(select)select.value=device.deviceId;
+ }catch(error){
+  if(error.name==='NotAllowedError'){
+   deviceStatus.textContent='No se concedió permiso para seleccionar una salida de audio.';
+  }else if(error.name==='NotFoundError'){
+   deviceStatus.textContent='No se encontró ese dispositivo de audio.';
+  }else{
+   deviceStatus.textContent='No fue posible abrir el selector de audio. Usa los ajustes de tu dispositivo.';
+  }
+ }
+}
+
 async function selectAudioOutput(deviceId){
  const deviceStatus=document.getElementById('deviceStatus');
  const select=document.getElementById('audioOutputSelect');
+
  if(typeof audio.setSinkId!=='function'){
   deviceStatus.textContent='No compatible: cambia la salida desde los ajustes de sonido de tu dispositivo.';
   return;
  }
+
  try{
   await audio.setSinkId(deviceId||'');
   const option=select.options[select.selectedIndex];
@@ -865,6 +953,7 @@ async function selectAudioOutput(deviceId){
   status('El navegador no permitió cambiar la salida de audio.');
  }
 }
+
 /* REPRODUCCIÓN */
 async function play(i){
  if(!songs[i])return;
@@ -895,12 +984,13 @@ async function play(i){
  }
 
  renderLyrics(selectedSong);
- renderNowPlayingArtist(selectedSong);
+ await renderNowPlayingArtist(selectedSong);
+
  fullPlayer.style.display='block';
  progress.value=0;
  currentTime.textContent='0:00';
  duration.textContent='0:00';
- refreshAudioOutputs();
+ await refreshAudioOutputs();
 
  try{
   await audio.play();
@@ -963,8 +1053,7 @@ audio.onpause=()=>{
  playBtn.textContent='▶';
  fullPlayBtn.textContent='▶';
 };
-
-/* CUENTAS: autenticación general separada de los permisos administrativos */
+/* CUENTAS: AUTENTICACIÓN GENERAL SEPARADA DE LOS PERMISOS ADMINISTRATIVOS */
 async function checkUser(){
  const {data,error}=await db.auth.getUser();
  currentUser=!error?data.user:null;
@@ -986,10 +1075,12 @@ async function checkUser(){
   favoriteGrid.innerHTML='<p class="empty">Inicia sesión para ver tus favoritos.</p>';
   playlistList.innerHTML='<p class="empty">Inicia sesión para ver tus playlists.</p>';
  }
+
  if(songs.length)await renderSongs();
  if(artists.length)await renderArtists();
  if(currentView==='search')await runAdvancedSearch();
 }
+
 async function loginUser(){
  const email=userEmail.value.trim(),password=userPassword.value;
  if(!email||!password){status('Escribe tu correo y contraseña.');return}
@@ -1000,6 +1091,7 @@ async function loginUser(){
  status('Sesión iniciada correctamente.');
  showMyMusic();
 }
+
 async function signUpUser(){
  const email=signupEmail.value.trim(),password=signupPassword.value;
  if(!email||password.length<6){
@@ -1017,11 +1109,13 @@ async function signUpUser(){
   status('Cuenta creada. Revisa tu correo para confirmar el registro y después inicia sesión.');
  }
 }
+
 async function logoutUser(){
  await db.auth.signOut();
  await checkUser();
  status('Sesión cerrada.');
 }
+
 async function login(){
  const email=document.getElementById('email').value.trim();
  const password=document.getElementById('password').value;
@@ -1040,6 +1134,7 @@ async function login(){
  await checkUser();
  status('Sesión de administrador iniciada.');
 }
+
 async function logout(){
  await db.auth.signOut();
  await checkUser();
@@ -1055,6 +1150,7 @@ async function loadFavorites(){
  await renderSongs();
  await renderFavorites();
 }
+
 async function toggleFavorite(path){
  if(!currentUser){
   showMyMusic();
@@ -1073,6 +1169,7 @@ async function toggleFavorite(path){
  await renderSongs();
  await renderFavorites();
 }
+
 async function renderFavorites(){
  favoriteGrid.innerHTML='';
  const list=songs.filter(s=>favorites.has(s.path));
@@ -1093,10 +1190,12 @@ async function loadPlaylists(){
  await renderPlaylists();
  if(currentView==='search')await runAdvancedSearch();
 }
+
 async function loadPersonalData(){
  await loadFavorites();
  await loadPlaylists();
 }
+
 async function createPlaylist(){
  if(!currentUser){status('Inicia sesión para crear playlists.');return}
  const name=playlistName.value.trim(),description=playlistDescription.value.trim();
@@ -1113,6 +1212,7 @@ async function createPlaylist(){
  status('¡Playlist creada!');
  await loadPlaylists();
 }
+
 async function renderPlaylists(){
  playlistList.innerHTML='';
  playlistCount.textContent=playlists.length+' playlists';
@@ -1134,6 +1234,7 @@ async function renderPlaylists(){
   playlistList.appendChild(box);
  }
 }
+
 async function openPlaylist(id){
  const p=playlists.find(x=>String(x.id)===String(id));
  if(!p)return;
@@ -1166,6 +1267,7 @@ async function openPlaylist(id){
  playlistList.prepend(area);
  area.scrollIntoView({behavior:'smooth',block:'start'});
 }
+
 async function choosePlaylist(path){
  if(!currentUser){
   showMyMusic();
@@ -1195,6 +1297,7 @@ async function choosePlaylist(path){
  status('¡Canción agregada a '+p.name+'!');
  await openPlaylist(p.id);
 }
+
 async function removeFromPlaylist(id,path,area){
  const {error}=await db.from(PLAYLIST_SONGS_TABLE).delete().eq('playlist_id',id).eq('storage_path',path);
  if(error){status('No se pudo quitar la canción: '+error.message);return}
@@ -1202,6 +1305,7 @@ async function removeFromPlaylist(id,path,area){
  area.remove();
  await openPlaylist(id);
 }
+
 async function renamePlaylist(id,oldName,oldDescription){
  const name=prompt('Nuevo nombre de la playlist:',oldName);
  if(name===null||!name.trim())return;
@@ -1215,6 +1319,7 @@ async function renamePlaylist(id,oldName,oldDescription){
  status('Playlist actualizada.');
  await loadPlaylists();
 }
+
 async function deletePlaylist(id){
  if(!confirm('¿Eliminar esta playlist? Las canciones originales no se borrarán.'))return;
  const {error}=await db.from(PLAYLISTS_TABLE).delete().eq('id',id).eq('user_id',currentUser.id);
@@ -1253,6 +1358,7 @@ async function init(){
  await loadSongs();
  await loadArtists();
 }
+
 init();
 </script>
 </body>
