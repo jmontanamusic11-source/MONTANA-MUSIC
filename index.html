@@ -72,6 +72,34 @@ h1 span{color:#e32636}
 .profilePhoto img{width:100%;height:100%;object-fit:cover}
 .profileHero h2{font-size:25px;margin-bottom:10px}
 .profileHero p{color:#aaa;font-size:13px;line-height:1.6;white-space:pre-wrap}
+
+/* BIOGRAFÍA DESPLEGABLE */
+#profileBio{
+ max-height:4.8em;
+ overflow:hidden;
+ transition:max-height .3s ease;
+}
+#profileBio.expanded{
+ max-height:2000px;
+}
+.bioToggle{
+ display:inline-block;
+ margin-top:10px;
+ padding:7px 12px;
+ background:transparent;
+ color:#ff5965;
+ font-size:12px;
+ font-weight:bold;
+ border-radius:7px;
+}
+.bioToggle:hover{
+ color:#ff7b84;
+ background:#292929;
+}
+.bioToggle[hidden]{
+ display:none;
+}
+
 .backButton{background:#292929;border-radius:8px;padding:10px 14px;margin-bottom:18px;font-size:12px}
 .empty{color:#aaa;font-size:13px;padding:20px 0}
 .albumCard{background:#141414;border:1px solid #292929;border-radius:13px;padding:15px;margin-bottom:13px}
@@ -177,7 +205,12 @@ h1 span{color:#e32636}
 
 <div id="artistProfile" style="display:none">
 <button class="backButton" onclick="showArtists()">← Volver a artistas</button>
-<section class="profileHero"><div class="profilePhoto" id="profilePhoto">♫</div><h2 id="profileName"></h2><p id="profileBio"></p></section>
+<section class="profileHero">
+<div class="profilePhoto" id="profilePhoto">♫</div>
+<h2 id="profileName"></h2>
+<p id="profileBio"></p>
+<button id="bioToggle" class="bioToggle" type="button" onclick="toggleArtistBio()" hidden>Ver más</button>
+</section>
 <section class="section"><div class="heading"><h2>Agregadas recientemente</h2><small>Lo más nuevo primero</small></div><div class="grid" id="artistSongs"></div></section>
 <section class="section"><div class="heading"><h2>Álbumes</h2><small id="artistAlbumCount"></small></div><div id="artistAlbums"></div></section>
 <section class="section"><div class="heading"><h2>Sencillos</h2><small id="artistSingleCount"></small></div><div class="grid" id="artistSingles"></div></section>
@@ -419,12 +452,39 @@ async function renderArtistAlbums(list){
   container.appendChild(box);
  }
 }
+
+/* CONTROL DEL BOTÓN VER MÁS / VER MENOS */
+function toggleArtistBio(){
+ const bio=document.getElementById('profileBio');
+ const button=document.getElementById('bioToggle');
+ const expanded=bio.classList.toggle('expanded');
+ button.textContent=expanded?'Ver menos':'Ver más';
+}
+
+function updateArtistBioToggle(){
+ const bio=document.getElementById('profileBio');
+ const button=document.getElementById('bioToggle');
+
+ bio.classList.remove('expanded');
+ button.textContent='Ver más';
+ button.hidden=true;
+
+ requestAnimationFrame(()=>{
+  const hasMoreText=bio.scrollHeight>bio.clientHeight+2;
+  button.hidden=!hasMoreText;
+ });
+}
+
 async function showArtistProfile(id){
  const a=artists.find(x=>String(x.id)===String(id));if(!a)return;
  currentArtist=a;currentView='artistProfile';hideMainViews();
  artistProfile.style.display='block';setActiveNav('navArtists');
  profileName.textContent=a.name;
  profileBio.textContent=a.biography||'Artista de MONTANA MUSIC';
+
+ // Cada perfil comienza con la biografía contraída.
+ updateArtistBioToggle();
+
  profilePhoto.innerHTML='♫';
  if(a.image_path){
   const {data}=await db.storage.from(COVER_BUCKET).createSignedUrl(a.image_path,3600);
