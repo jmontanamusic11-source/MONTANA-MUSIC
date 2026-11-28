@@ -21,7 +21,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @CapacitorPlugin(name = "NativePlayback")
 public final class NativePlaybackPlugin extends Plugin {
