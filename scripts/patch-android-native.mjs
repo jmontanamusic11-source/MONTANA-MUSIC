@@ -57,7 +57,7 @@ if (mainActivity.length !== 1) throw new Error(`Se esperaba un MainActivity.java
 let activity = fs.readFileSync(mainActivity[0], 'utf8');
 if (!activity.includes('NativePlaybackPlugin.class')) {
   activity = activity.replace(/(package [^;]+;)/, '$1\n\nimport com.montanamusic.app.NativePlaybackPlugin;');
-  activity = activity.replace(/super\\.onCreate\\(savedInstanceState\\);/, 'registerPlugin(NativePlaybackPlugin.class);\n        super.onCreate(savedInstanceState);');
+  activity = activity.replace(/super\.onCreate\\(savedInstanceState\\);/, 'registerPlugin(NativePlaybackPlugin.class);\n        super.onCreate(savedInstanceState);');
   if (!activity.includes('NativePlaybackPlugin.class')) throw new Error('No se pudo registrar NativePlaybackPlugin en MainActivity.');
 }
 fs.writeFileSync(mainActivity[0], activity);
