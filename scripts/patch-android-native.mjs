@@ -21,7 +21,7 @@ const permissions = [
 for (const permission of permissions) {
   const line = `    <uses-permission android:name="${permission}" />`;
   if (!manifest.includes(`android:name="${permission}"`)) {
-    manifest = manifest.replace('<application', line + '\\n    <application');
+    manifest = manifest.replace('<application', line + '\n    <application');
   }
 }
 if (!manifest.includes('com.montanamusic.app.PlaybackService')) {
@@ -40,7 +40,7 @@ fs.writeFileSync(manifestPath, manifest);
 const gradlePath = path.join(appDir, 'build.gradle');
 let gradle = fs.readFileSync(gradlePath, 'utf8');
 if (!gradle.includes('androidx.media3:media3-exoplayer')) {
-  gradle += `\\n\\ndependencies {\\n    implementation "androidx.media3:media3-exoplayer:1.11.1"\\n    implementation "androidx.media3:media3-session:1.11.1"\\n}\\n`;
+  gradle += `\n\ndependencies {\n    implementation "androidx.media3:media3-exoplayer:1.11.1"\n    implementation "androidx.media3:media3-session:1.11.1"\n}\n`;
 }
 fs.writeFileSync(gradlePath, gradle);
 
@@ -56,8 +56,8 @@ walk(javaRoot);
 if (mainActivity.length !== 1) throw new Error(`Se esperaba un MainActivity.java y se encontraron ${mainActivity.length}`);
 let activity = fs.readFileSync(mainActivity[0], 'utf8');
 if (!activity.includes('NativePlaybackPlugin.class')) {
-  activity = activity.replace(/(package [^;]+;)/, '$1\\n\\nimport com.montanamusic.app.NativePlaybackPlugin;');
-  activity = activity.replace(/super\\.onCreate\\(savedInstanceState\\);/, 'registerPlugin(NativePlaybackPlugin.class);\\n        super.onCreate(savedInstanceState);');
+  activity = activity.replace(/(package [^;]+;)/, '$1\n\nimport com.montanamusic.app.NativePlaybackPlugin;');
+  activity = activity.replace(/super\\.onCreate\\(savedInstanceState\\);/, 'registerPlugin(NativePlaybackPlugin.class);\n        super.onCreate(savedInstanceState);');
   if (!activity.includes('NativePlaybackPlugin.class')) throw new Error('No se pudo registrar NativePlaybackPlugin en MainActivity.');
 }
 fs.writeFileSync(mainActivity[0], activity);
