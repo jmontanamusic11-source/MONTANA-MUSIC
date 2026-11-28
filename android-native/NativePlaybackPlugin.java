@@ -66,16 +66,20 @@ public final class NativePlaybackPlugin extends Plugin {
         }, getContext().getMainExecutor());
     }
 
-    private void emitState() {
-        if (controller == null) return;
+    private JSObject stateObject() {
         JSObject state = new JSObject();
+        if (controller == null) return state;
         MediaItem item = controller.getCurrentMediaItem();
         state.put("mediaId", item == null ? "" : item.mediaId);
         state.put("isPlaying", controller.isPlaying());
         state.put("position", controller.getCurrentPosition());
         state.put("duration", controller.getDuration());
         state.put("playbackState", controller.getPlaybackState());
-        notifyListeners("playbackState", state);
+        return state;
+    }
+
+    private void emitState() {
+        if (controller != null) notifyListeners("playbackState", stateObject());
     }
 
     @PluginMethod
@@ -161,7 +165,7 @@ public final class NativePlaybackPlugin extends Plugin {
 
     @PluginMethod
     public void getState(PluginCall call) {
-        withController(call, player -> { emitState(); call.resolve(); });
+        withController(call, player -> call.resolve(stateObject()));
     }
 
     @Override
