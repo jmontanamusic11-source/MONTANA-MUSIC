@@ -1708,13 +1708,19 @@ async function init(){
 
 init();
 </script>
-<script type="module">
-if(window.Capacitor?.isNativePlatform?.()){
+<script>
+(async()=>{
+ if(!window.Capacitor?.isNativePlatform?.())return;
  try{
-  const { registerPlugin } = await import('https://esm.sh/@capacitor/core@8.0.0');
-  const NativePlayback = registerPlugin('NativePlayback');
-  window.NativePlayback = NativePlayback;
-  await NativePlayback.addListener('playbackState', state => {
+  // Capacitor 8 injects native plugin proxies into this WebView.
+  // Reuse that bridge instead of importing a second copy of @capacitor/core.
+  const NativePlayback=window.Capacitor?.Plugins?.NativePlayback;
+  if(!NativePlayback){
+   console.error('Capacitor no registró NativePlayback en el puente nativo.');
+   return;
+  }
+  window.NativePlayback=NativePlayback;
+  await NativePlayback.addListener('playbackState',state=>{
    window.dispatchEvent(new CustomEvent('montana-native-state',{detail:state}));
   });
   window.nativePlaybackBridgeReady=true;
@@ -1729,7 +1735,7 @@ if(window.Capacitor?.isNativePlatform?.()){
  }catch(error){
   console.error('No se pudo inicializar el reproductor nativo:',error);
  }
-}
+})();
 </script>
 </body>
 </html>
