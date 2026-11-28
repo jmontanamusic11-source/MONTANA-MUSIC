@@ -21,7 +21,7 @@ public final class PlaybackService extends MediaSessionService {
                 .build(),
             true
         );
-        player.setWakeMode(C.WAKE_MODE_NETWORK);
+        player.setWakeMode(C.WAKE_MODE_LOCAL);
         mediaSession = new MediaSession.Builder(this, player).build();
     }
 
