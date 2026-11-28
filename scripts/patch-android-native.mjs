@@ -56,9 +56,26 @@ walk(javaRoot);
 if (mainActivity.length !== 1) throw new Error(`Se esperaba un MainActivity.java y se encontraron ${mainActivity.length}`);
 let activity = fs.readFileSync(mainActivity[0], 'utf8');
 if (!activity.includes('NativePlaybackPlugin.class')) {
-  activity = activity.replace(/(package [^;]+;)/, '$1\n\nimport com.montanamusic.app.NativePlaybackPlugin;');
-  activity = activity.replace(/super\.onCreate\(savedInstanceState\);/, 'registerPlugin(NativePlaybackPlugin.class);\n        super.onCreate(savedInstanceState);');
-  if (!activity.includes('NativePlaybackPlugin.class')) throw new Error('No se pudo registrar NativePlaybackPlugin en MainActivity.');
+  if (!activity.includes('import com.montanamusic.app.NativePlaybackPlugin;')) {
+    activity = activity.replace(/(package [^;]+;)/, '$1\n\nimport com.montanamusic.app.NativePlaybackPlugin;');
+  }
+  if (/super\.onCreate\(savedInstanceState\);/.test(activity)) {
+    activity = activity.replace(/super\.onCreate\(savedInstanceState\);/, 'registerPlugin(NativePlaybackPlugin.class);\n        super.onCreate(savedInstanceState);');
+  } else {
+    const classDeclaration = /public class MainActivity extends BridgeActivity\s*\{/;
+    if (!classDeclaration.test(activity)) {
+      throw new Error('No se encontró la declaración estándar de MainActivity de Capacitor.');
+    }
+    activity = activity.replace(classDeclaration, `public class MainActivity extends BridgeActivity {
+    @Override
+    public void onCreate(android.os.Bundle savedInstanceState) {
+        registerPlugin(NativePlaybackPlugin.class);
+        super.onCreate(savedInstanceState);
+    }`);
+  }
+  if (!activity.includes('registerPlugin(NativePlaybackPlugin.class)')) {
+    throw new Error('No se pudo registrar NativePlaybackPlugin en MainActivity.');
+  }
 }
 fs.writeFileSync(mainActivity[0], activity);
 console.log('Integración Media3 aplicada al proyecto Android generado.');
