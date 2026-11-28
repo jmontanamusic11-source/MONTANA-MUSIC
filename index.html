@@ -1259,7 +1259,7 @@ async function play(i){
     }
     return {mediaId:song.path,url,title:songTitle(song),artist:songArtist(song),artwork};
    }));
-   nativePlaybackActive=true;
+   nativePlaybackActive=true;window.nativePlaybackActive=true;
    await window.NativePlayback.playQueue({tracks,startIndex:before});
    audio.pause();
    audio.removeAttribute('src');
@@ -1267,7 +1267,7 @@ async function play(i){
    status('Reproduciendo con el servicio nativo de Android.');
    return;
   }
-  nativePlaybackActive=false;
+  nativePlaybackActive=false;window.nativePlaybackActive=false;
   audio.src=audioUrl;
   audio.load();
   audio.play().catch(()=>{
