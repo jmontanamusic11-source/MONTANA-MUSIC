@@ -1204,47 +1204,73 @@ if(navigator.mediaDevices?.addEventListener){
 }
 
 /* REPRODUCCIÓN */
+// Enlaces firmados en memoria: se reutilizan y se renuevan antes de expirar.
+const signedAudioUrlCache=new Map();
+audio.preload='auto';
+
+async function getAudioUrl(song){
+ const cached=signedAudioUrlCache.get(song.path);
+ if(cached&&cached.expiresAt>Date.now()+60000)return cached.url;
+ const {data,error}=await db.storage.from(BUCKET).createSignedUrl(song.path,3600);
+ if(error)throw error;
+ if(!data?.signedUrl)throw new Error('Supabase no devolvió un enlace de reproducción.');
+ signedAudioUrlCache.set(song.path,{url:data.signedUrl,expiresAt:Date.now()+3500000});
+ return data.signedUrl;
+}
+
+function prefetchAudioUrl(song){
+ if(song)getAudioUrl(song).catch(()=>{});
+}
+
 async function play(i){
  if(!songs[i])return;
  index=i;
- status('Preparando reproducción...');
  const selectedSong=songs[i];
- const {data,error}=await db.storage.from(BUCKET).createSignedUrl(selectedSong.path,3600);
- if(error){status('No se pudo reproducir: '+error.message);return}
- if(songs[index]?.path!==selectedSong.path)return;
-
- audio.src=data.signedUrl;
+ const selectedPath=selectedSong.path;
  const title=songTitle(selectedSong),artist=songArtist(selectedSong);
+
+ status('Conectando con el audio...');
  songTitleEl.textContent=title;
  artistEl.textContent=artist;
  fullTitle.textContent=title;
  fullArtist.textContent=artist;
-
  fullCover.innerHTML='♫';
- const c=coverFiles.find(f=>f.name&&f.name.startsWith(selectedSong.path+'__cover_'));
- if(c){
-  const {data:d}=await db.storage.from(COVER_BUCKET).createSignedUrl(c.name,3600);
-  if(d?.signedUrl&&songs[index]?.path===selectedSong.path){
-   const img=document.createElement('img');
-   img.src=d.signedUrl;
-   img.alt='Portada de '+title;
-   fullCover.appendChild(img);
-  }
- }
-
  renderLyrics(selectedSong);
- await renderNowPlayingArtist(selectedSong);
-
  fullPlayer.style.display='block';
  progress.value=0;
  currentTime.textContent='0:00';
  duration.textContent='0:00';
- await refreshAudioOutputs();
 
+ // Solo se espera el enlace del audio. Lo demás se carga en segundo plano.
  try{
-  await audio.play();
+  const audioUrl=await getAudioUrl(selectedSong);
+  if(songs[index]?.path!==selectedPath)return;
+  audio.src=audioUrl;
+  audio.load();
+  audio.play().catch(()=>{
+   if(songs[index]?.path===selectedPath)status('Toca reproducir para escuchar.');
+  });
+
+  // Deja lista la siguiente canción para acelerar el siguiente toque.
+  const nextSong=songs[(i+1)%songs.length];
+  if(nextSong&&nextSong.path!==selectedPath)prefetchAudioUrl(nextSong);
+
+  // Portada, perfil del artista y dispositivos no bloquean el audio.
+  const cover=coverFiles.find(f=>f.name&&f.name.startsWith(selectedPath+'__cover_'));
+  if(cover){
+   db.storage.from(COVER_BUCKET).createSignedUrl(cover.name,3600).then(({data})=>{
+    if(data?.signedUrl&&songs[index]?.path===selectedPath){
+     const img=document.createElement('img');
+     img.src=data.signedUrl;
+     img.alt='Portada de '+title;
+     fullCover.appendChild(img);
+    }
+   }).catch(()=>{});
+  }
+  renderNowPlayingArtist(selectedSong).catch(()=>{});
+  refreshAudioOutputs().catch(()=>{});
  }catch(e){
-  status('Toca reproducir para escuchar.');
+  if(songs[index]?.path===selectedPath)status('No se pudo reproducir: '+(e?.message||'Error de conexión'));
  }
 }
 
@@ -1296,6 +1322,7 @@ audio.onloadedmetadata=()=>{
 };
 audio.onended=next;
 audio.onplay=()=>{
+ status('Reproduciendo: '+(songs[index]?songTitle(songs[index]):''));
  playBtn.textContent='Ⅱ';
  fullPlayBtn.textContent='Ⅱ';
 };
