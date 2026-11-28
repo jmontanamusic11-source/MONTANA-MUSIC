@@ -1209,13 +1209,14 @@ if(navigator.mediaDevices?.addEventListener){
 const signedAudioUrlCache=new Map();
 audio.preload='auto';
 
-async function getAudioUrl(song){
+async function getAudioUrl(song,expiresIn=3600){
  const cached=signedAudioUrlCache.get(song.path);
- if(cached&&cached.expiresAt>Date.now()+60000)return cached.url;
- const {data,error}=await db.storage.from(BUCKET).createSignedUrl(song.path,3600);
+ const requestedExpiry=Date.now()+expiresIn*1000-60000;
+ if(cached&&cached.expiresAt>requestedExpiry)return cached.url;
+ const {data,error}=await db.storage.from(BUCKET).createSignedUrl(song.path,expiresIn);
  if(error)throw error;
  if(!data?.signedUrl)throw new Error('Supabase no devolvió un enlace de reproducción.');
- signedAudioUrlCache.set(song.path,{url:data.signedUrl,expiresAt:Date.now()+3500000});
+ signedAudioUrlCache.set(song.path,{url:data.signedUrl,expiresAt:Date.now()+expiresIn*1000-5000});
  return data.signedUrl;
 }
 
@@ -1244,14 +1245,14 @@ async function play(i){
 
  // Solo se espera el enlace del audio. Lo demás se carga en segundo plano.
  try{
-  const audioUrl=await getAudioUrl(selectedSong);
+  const audioUrl=await getAudioUrl(selectedSong,window.Capacitor?.isNativePlatform?.()?86400:3600);
   if(songs[index]?.path!==selectedPath)return;
   if(window.NativePlayback && window.Capacitor?.isNativePlatform?.()){
    const before=Math.min(5,i), count=Math.min(songs.length,30);
    const queueStart=(i-before+songs.length)%songs.length;
    const tracks=await Promise.all(Array.from({length:count},async(_,offset)=>{
     const song=songs[(queueStart+offset)%songs.length];
-    const url=offset===before?audioUrl:await getAudioUrl(song);
+    const url=offset===before?audioUrl:await getAudioUrl(song,86400);
     let artwork='';
     const cover=coverFiles.find(f=>f.name&&f.name.startsWith(song.path+'__cover_'));
     if(cover){
