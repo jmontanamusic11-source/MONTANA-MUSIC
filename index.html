@@ -469,6 +469,7 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY),audio=document.
 const statusBox=document.getElementById('status');
 let songs=[],coverFiles=[],metadata={},artists=[],currentUser=null;
 let index=-1,isAdmin=false,editingSong=null,editingArtist=null,editorMode='song',currentArtist=null,currentView='home';
+let nativePlaybackActive=false,nativeIsPlaying=false;
 let favorites=new Set(),playlists=[],activePlaylist=null;
 let searchFilter='todo',searchQuery='';
 let parsedLyrics=[],activeLyricIndex=-1,nowPlayingArtistId=null;
@@ -1245,6 +1246,28 @@ async function play(i){
  try{
   const audioUrl=await getAudioUrl(selectedSong);
   if(songs[index]?.path!==selectedPath)return;
+  if(window.NativePlayback && window.Capacitor?.isNativePlatform?.()){
+   const before=Math.min(5,i), count=Math.min(songs.length,30);
+   const queueStart=(i-before+songs.length)%songs.length;
+   const tracks=await Promise.all(Array.from({length:count},async(_,offset)=>{
+    const song=songs[(queueStart+offset)%songs.length];
+    const url=offset===before?audioUrl:await getAudioUrl(song);
+    let artwork='';
+    const cover=coverFiles.find(f=>f.name&&f.name.startsWith(song.path+'__cover_'));
+    if(cover){
+     try{const result=await db.storage.from(COVER_BUCKET).createSignedUrl(cover.name,3600);artwork=result.data?.signedUrl||'';}catch(_){}
+    }
+    return {mediaId:song.path,url,title:songTitle(song),artist:songArtist(song),artwork};
+   }));
+   nativePlaybackActive=true;
+   await window.NativePlayback.playQueue({tracks,startIndex:before});
+   audio.pause();
+   audio.removeAttribute('src');
+   audio.load();
+   status('Reproduciendo con el servicio nativo de Android.');
+   return;
+  }
+  nativePlaybackActive=false;
   audio.src=audioUrl;
   audio.load();
   audio.play().catch(()=>{
@@ -1289,6 +1312,11 @@ function formatTime(s){
  return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 }
 function seekTo(v){
+ if(nativePlaybackActive){
+  const d=Number(duration.textContent.split(':')[0])*60+Number(duration.textContent.split(':')[1]);
+  if(Number.isFinite(d)&&d>0)window.NativePlayback?.seekTo({position:Math.round(Number(v)/100*d*1000)});
+  return;
+ }
  if(Number.isFinite(audio.duration)){
   audio.currentTime=Number(v)/100*audio.duration;
   updateSyncedLyrics();
@@ -1299,15 +1327,49 @@ function toggle(){
   if(songs.length)play(0);
   return;
  }
+ if(nativePlaybackActive){
+  (nativeIsPlaying?window.NativePlayback.pause():window.NativePlayback.resume()).catch(()=>status('No se pudo controlar la reproducción.'));
+  return;
+ }
  if(audio.paused)audio.play().catch(()=>status('No se pudo continuar.'));
  else audio.pause();
 }
 function next(){
+ if(nativePlaybackActive){window.NativePlayback?.next().catch(()=>{});return}
  if(songs.length)play((index+1)%songs.length);
 }
 function previous(){
+ if(nativePlaybackActive){window.NativePlayback?.previous().catch(()=>{});return}
  if(songs.length)play((index-1+songs.length)%songs.length);
 }
+
+window.addEventListener('montana-native-state',event=>{
+ const state=event.detail||{};
+ if(!nativePlaybackActive)return;
+ const found=songs.findIndex(song=>song.path===state.mediaId);
+ if(found>=0&&found!==index){
+  index=found;
+  const song=songs[index],title=songTitle(song),artist=songArtist(song);
+  songTitleEl.textContent=title;artistEl.textContent=artist;
+  fullTitle.textContent=title;fullArtist.textContent=artist;
+  fullCover.innerHTML='♫';renderLyrics(song);
+  const cover=coverFiles.find(f=>f.name&&f.name.startsWith(song.path+'__cover_'));
+  if(cover)db.storage.from(COVER_BUCKET).createSignedUrl(cover.name,3600).then(({data})=>{
+   if(data?.signedUrl&&nativePlaybackActive&&songs[index]?.path===song.path){
+    const img=document.createElement('img');img.src=data.signedUrl;img.alt='Portada de '+title;fullCover.appendChild(img);
+   }
+  }).catch(()=>{});
+  renderNowPlayingArtist(song).catch(()=>{});
+ }
+ nativeIsPlaying=!!state.isPlaying;
+ playBtn.textContent=nativeIsPlaying?'Ⅱ':'▶';
+ fullPlayBtn.textContent=nativeIsPlaying?'Ⅱ':'▶';
+ if(Number.isFinite(state.duration)&&state.duration>0){
+  progress.value=Math.max(0,Math.min(100,state.position/state.duration*100));
+  currentTime.textContent=formatTime(state.position/1000);
+  duration.textContent=formatTime(state.duration/1000);
+ }
+});
 
 audio.ontimeupdate=()=>{
  if(Number.isFinite(audio.duration)&&audio.duration>0){
@@ -1639,6 +1701,22 @@ async function init(){
 }
 
 init();
+</script>
+<script type="module">
+import { registerPlugin } from 'https://esm.sh/@capacitor/core@8.0.0';
+const NativePlayback = registerPlugin('NativePlayback');
+window.NativePlayback = NativePlayback;
+NativePlayback.addListener('playbackState', state => {
+ window.dispatchEvent(new CustomEvent('montana-native-state',{detail:state}));
+});
+setInterval(async()=>{
+ try{
+  if(window.NativePlayback&&window.Capacitor?.isNativePlatform?.()&&window.nativePlaybackActive){
+   const state=await NativePlayback.getState();
+   window.dispatchEvent(new CustomEvent('montana-native-state',{detail:state}));
+  }
+ }catch(_){}
+},1000);
 </script>
 </body>
 </html>
