@@ -30,7 +30,7 @@ public final class NativePlaybackPlugin extends Plugin {
 
     private void withController(PluginCall call, ControllerAction action) {
         if (controller != null) {
-            action.run(controller);
+            runAction(call, controller, action);
             return;
         }
         if (controllerFuture == null) {
@@ -59,11 +59,22 @@ public final class NativePlaybackPlugin extends Plugin {
                         emitState();
                     }
                 });
-                action.run(controller);
-            } catch (ExecutionException | InterruptedException e) {
-                call.reject("No se pudo iniciar el reproductor nativo.", e);
+                runAction(call, controller, action);
+            } catch (Exception e) {
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                call.reject("No se pudo conectar con el servicio de reproducción.", e);
             }
         }, getContext().getMainExecutor());
+    }
+
+    private void runAction(PluginCall call, MediaController player, ControllerAction action) {
+        try {
+            action.run(player);
+        } catch (Exception e) {
+            call.reject("Ocurrió un error al controlar el reproductor nativo.", e);
+        }
     }
 
     private JSObject stateObject() {
