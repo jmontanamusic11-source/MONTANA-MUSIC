@@ -1250,18 +1250,23 @@ async function play(i){
   if(window.NativePlayback && window.Capacitor?.isNativePlatform?.()){
    const before=Math.min(5,i), count=Math.min(songs.length,30);
    const queueStart=(i-before+songs.length)%songs.length;
-   const tracks=await Promise.all(Array.from({length:count},async(_,offset)=>{
+   const prepared=await Promise.all(Array.from({length:count},async(_,offset)=>{
     const song=songs[(queueStart+offset)%songs.length];
-    const url=offset===before?audioUrl:await getAudioUrl(song,86400);
-    let artwork='';
-    const cover=coverFiles.find(f=>f.name&&f.name.startsWith(song.path+'__cover_'));
-    if(cover){
-     try{const result=await db.storage.from(COVER_BUCKET).createSignedUrl(cover.name,3600);artwork=result.data?.signedUrl||'';}catch(_){}
-    }
-    return {mediaId:song.path,url,title:songTitle(song),artist:songArtist(song),artwork};
+    try{
+     const url=offset===before?audioUrl:await getAudioUrl(song,86400);
+     let artwork='';
+     const cover=coverFiles.find(f=>f.name&&f.name.startsWith(song.path+'__cover_'));
+     if(cover){
+      try{const result=await db.storage.from(COVER_BUCKET).createSignedUrl(cover.name,86400);artwork=result.data?.signedUrl||'';}catch(_){}
+     }
+     return {mediaId:song.path,url,title:songTitle(song),artist:songArtist(song),artwork};
+    }catch(error){console.warn('Se omitió una canción de la cola nativa:',song.path,error);return null;}
    }));
+   const tracks=prepared.filter(Boolean);
+   const nativeStartIndex=tracks.findIndex(track=>track.mediaId===selectedPath);
+   if(nativeStartIndex<0)throw new Error('No se pudo preparar la canción seleccionada para Android.');
    nativePlaybackActive=true;window.nativePlaybackActive=true;
-   await window.NativePlayback.playQueue({tracks,startIndex:before});
+   await window.NativePlayback.playQueue({tracks,startIndex:nativeStartIndex});
    audio.pause();
    audio.removeAttribute('src');
    audio.load();
