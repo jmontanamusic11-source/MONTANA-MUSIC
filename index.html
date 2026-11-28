@@ -1704,20 +1704,27 @@ async function init(){
 init();
 </script>
 <script type="module">
-import { registerPlugin } from 'https://esm.sh/@capacitor/core@8.0.0';
-const NativePlayback = registerPlugin('NativePlayback');
-window.NativePlayback = NativePlayback;
-NativePlayback.addListener('playbackState', state => {
- window.dispatchEvent(new CustomEvent('montana-native-state',{detail:state}));
-});
-setInterval(async()=>{
+if(window.Capacitor?.isNativePlatform?.()){
  try{
-  if(window.NativePlayback&&window.Capacitor?.isNativePlatform?.()&&window.nativePlaybackActive){
-   const state=await NativePlayback.getState();
+  const { registerPlugin } = await import('https://esm.sh/@capacitor/core@8.0.0');
+  const NativePlayback = registerPlugin('NativePlayback');
+  window.NativePlayback = NativePlayback;
+  await NativePlayback.addListener('playbackState', state => {
    window.dispatchEvent(new CustomEvent('montana-native-state',{detail:state}));
-  }
- }catch(_){}
-},1000);
+  });
+  window.nativePlaybackBridgeReady=true;
+  setInterval(async()=>{
+   try{
+    if(window.nativePlaybackActive){
+     const state=await NativePlayback.getState();
+     window.dispatchEvent(new CustomEvent('montana-native-state',{detail:state}));
+    }
+   }catch(_){}
+  },1000);
+ }catch(error){
+  console.error('No se pudo inicializar el reproductor nativo:',error);
+ }
+}
 </script>
 </body>
 </html>
